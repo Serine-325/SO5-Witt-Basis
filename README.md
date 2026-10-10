@@ -18,11 +18,11 @@ The project builds on my doctoral research in the representation theory of p-adi
 
 ## Mathematical Framework
 
-We consider elliptic maximal tori arising from different étale algebra structures:
+We consider elliptic maximal tori arising from different  algebra structures:
 
 1. **Sums of two quadratic extensions:** $$ F(\sqrt{\alpha})\oplus F(\sqrt{\beta})\oplus F$$.
 2. **Biquadratic extensions:** $E\oplus F$, where $ E/F$ is biquadratic.
-3. **Quartic field extensions:** \(E\oplus F\), where \(E/F\) is a quartic field extension.
+3. **Quartic field extensions:** $$ E\oplus F$$, where \(E/F\) is a quartic field extension.
 
 For each case, the project aims to construct an explicit Witt basis and use it to study the corresponding point in the Bruhat–Tits building of the split group.
 
