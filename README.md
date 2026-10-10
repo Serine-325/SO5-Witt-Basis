@@ -4,9 +4,9 @@
 
 This project develops computational methods for studying elliptic maximal tori in the split special orthogonal group
 
-\[
+$$
 G=\mathrm{SO}(2\mathbb H\oplus\langle1\rangle)\simeq\mathrm{SO}(5)
-\]
+$$
 
 over a non-archimedean local field of odd residue characteristic.
 
