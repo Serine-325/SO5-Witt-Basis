@@ -1,69 +1,77 @@
-# Explicit Witt Basis Constructions for Elliptic Tori in SO(5)
+# Explicit Witt Bases and Bruhat–Tits Buildings for Elliptic Tori in Split SO(5)
 
-## Overview
+## Project Overview
 
-This repository contains Python implementations of explicit Witt basis constructions associated with elliptic maximal tori in the split special orthogonal group SO(5).
+This project develops computational methods for studying elliptic maximal tori in the split special orthogonal group
+
+\[
+G=\mathrm{SO}(2\mathbb H\oplus\langle1\rangle)\simeq\mathrm{SO}(5)
+\]
+
+over a non-archimedean local field of odd residue characteristic.
+
+The ultimate objective is to explicitly determine the points in the Bruhat–Tits building associated with elliptic maximal tori, using the parameters defining the tori and their corresponding quadratic forms.
+
+The first stage constructs explicit Witt bases, providing coordinates suitable for studying the associated lattices and their positions in the building.
 
 The project builds on my doctoral research in the representation theory of p-adic groups at the University of Ottawa.
 
-## Mathematical Background
+## Mathematical Framework
 
-Let F be a non-archimedean local field of odd residue characteristic.
+We consider elliptic maximal tori arising from different étale algebra structures:
 
-For the sum-of-two-quadratic-extensions case, consider the  algebra
+1. **Sums of two quadratic extensions:** \(F(\sqrt{\alpha})\oplus F(\sqrt{\beta})\oplus F\).
+2. **Biquadratic extensions:** \(E\oplus F\), where \(E/F\) is biquadratic.
+3. **Quartic field extensions:** \(E\oplus F\), where \(E/F\) is a quartic field extension.
+
+For each case, the project aims to construct an explicit Witt basis and use it to study the corresponding point in the Bruhat–Tits building of the split group.
+
+## Current Implementation
+
+### Sum of Two Quadratic Extensions
+
+**File:** `Witt_Basis_Sum_Quadratics.py`
+
+For the quadratic form
 
 \[
-\mathcal A=F(\sqrt{\alpha})\oplus F(\sqrt{\beta})\oplus F.
+q(x,y,z)=\mu_1N_\alpha(x)+\mu_2N_\beta(y)+\lambda z^2,
 \]
 
-The associated quadratic form is
-
-\[
-q(x,y,z)=\mu_1N_\alpha(x)+\mu_2N_\beta(y)+\lambda z^2.
-\]
-
-The program constructs a Witt basis
+the program constructs a Witt basis
 
 \[
 \mathcal B^*=\{e_1,e_2,f_1,f_2,g_1\}
 \]
 
-for admissible split quadratic forms, satisfying
+satisfying the required isotropy, normalization, and orthogonality conditions.
 
-\[
-q(e_i)=q(f_i)=0,\quad B(e_i,f_j)=\delta_{ij},\quad q(g_1)=1,
-\]
+The implementation covers equal quadratic extensions and distinct quadratic extensions, including the relevant Hilbert-symbol cases.
 
-with the remaining pairings equal to zero.
+The current version has been tested on 36 admissible parameter configurations.
 
-## Current Implementation
+## Research Development Plan
 
-**Witt_Basis_Sum_Quadratics.py**
+### Stage 1 — Explicit Witt Basis Constructions
+- Sum of two quadratic extensions — implemented and tested.
+- Biquadratic extensions — planned.
+- Quartic field extensions — planned.
 
-Handles three constructions:
+### Stage 2 — Bruhat–Tits Building Computations
+- Express the relevant lattice data in the constructed Witt bases.
+- Determine the corresponding points in the Bruhat–Tits building.
+- Implement the necessary valuation and coordinate calculations.
+- Compare the computed results with the theoretical classification.
 
-1. Equal quadratic extensions.
-2. Distinct quadratic extensions with Hilbert symbol +1.
-3. Distinct quadratic extensions with Hilbert symbol -1.
-
-The implementation includes explicit norm-witness constructions and exceptional cases involving the unramified quadratic extension.
-
-## Verification
-
-The current implementation has been tested on 36 admissible parameter configurations, using algebraic checks of the Witt basis identities.
-
-These tests provide computational verification of the implemented constructions; they do not replace the general mathematical proofs.
-
-## Planned Extensions
-
-- Explicit Witt basis constructions for biquadratic extensions.
-- Explicit Witt basis constructions for quartic field extensions.
-- Applications to the Bruhat–Tits building and elliptic tori of SO(5).
+### Stage 3 — Verification and Documentation
+- Verify the mathematical identities and computational outputs.
+- Document the constructions and their proofs.
+- Develop examples and tests for the implemented algorithms.
 
 ## Author
 
-Serine Bairakji
+**Serine Bairakji**
 
 PhD in Mathematics, University of Ottawa
 
-Research interests: representation theory of p-adic groups, algebraic groups, and explicit constructions in SO(5).
+Research interests: representation theory of p-adic groups, algebraic groups, elliptic tori, and Bruhat–Tits buildings.
