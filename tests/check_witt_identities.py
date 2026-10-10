@@ -1,6 +1,7 @@
+from pathlib import Path
 import contextlib,io,itertools,re,collections
 import sympy as S
-source=open('/mnt/data/Witt_Basis_updated_v5.py').read().split('\nwhile True:\n\n    construct_witt_basis()')[0]
+source=open(Path(__file__).resolve().parents[1] / 'Witt_Basis_Sum_Quadratics.py').read().split('\nwhile True:\n\n    construct_witt_basis()')[0]
 ns={};exec(compile(source,'v5','exec'),ns)
 U,V=S.symbols('U V'); s0,t0=S.symbols('s0 t0'); classes=['epsilon','pi','epsilon*pi']
 counts=collections.Counter(); failures=[]
