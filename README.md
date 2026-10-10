@@ -34,15 +34,15 @@ For each case, the project aims to construct an explicit Witt basis and use it t
 
 For the quadratic form
 
-\[
+$$
 q(x,y,z)=\mu_1N_\alpha(x)+\mu_2N_\beta(y)+\lambda z^2,
-\]
+$$
 
 the program constructs a Witt basis
 
-\[
+$$
 \mathcal B^*=\{e_1,e_2,f_1,f_2,g_1\}
-\]
+$$
 
 satisfying the required isotropy, normalization, and orthogonality conditions.
 
