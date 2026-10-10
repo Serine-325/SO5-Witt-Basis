@@ -1,5 +1,6 @@
 import ast,contextlib,io,itertools
-p='/mnt/data/Witt_Basis_updated_v5.py'
+from pathlib import Path
+p=str(Path(__file__).resolve().parents[1] / 'Witt_Basis_Sum_Quadratics.py')
 s=open(p).read(); s=s[:s.index('\nwhile True:\n\n    construct_witt_basis()')]
 ns={}; exec(compile(s,p,'exec'),ns)
 classes=['epsilon','pi','epsilon*pi']; results=[]
