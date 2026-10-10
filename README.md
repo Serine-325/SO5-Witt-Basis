@@ -10,7 +10,7 @@ The project builds on my doctoral research in the representation theory of p-adi
 
 Let F be a non-archimedean local field of odd residue characteristic.
 
-For the sum-of-two-quadratic-extensions case, consider the étale algebra
+For the sum-of-two-quadratic-extensions case, consider the  algebra
 
 \[
 \mathcal A=F(\sqrt{\alpha})\oplus F(\sqrt{\beta})\oplus F.
