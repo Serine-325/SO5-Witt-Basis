@@ -1,7 +1,7 @@
 import sympy as S
 from pathlib import Path
 import contextlib,io,itertools
-source=Path('/mnt/data/Witt_Basis_updated_v5.py').read_text().split('\nwhile True:\n\n    construct_witt_basis()')[0]
+source=(Path(__file__).resolve().parents[1] / 'Witt_Basis_Sum_Quadratics.py').read_text().split('\nwhile True:\n\n    construct_witt_basis()')[0]
 ns={}
 with contextlib.redirect_stdout(io.StringIO()):exec(compile(source,'v5','exec'),ns)
 classes=['epsilon','pi','epsilon*pi']; rows=[]
