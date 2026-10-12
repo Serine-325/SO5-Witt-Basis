@@ -45,9 +45,9 @@ $$
 
 The project considers three families of algebra structures:
 
-1. **Sums of two quadratic extensions:** \(F(\sqrt{\alpha})\oplus F(\sqrt{\beta})\oplus F\).
-2. **Biquadratic extensions:** \(K\oplus F\), where \(K/F\) is biquadratic.
-3. **Quartic field extensions:** \(E\oplus F\), where \(E/F\) is a quartic field extension.
+1. **Sums of two quadratic extensions:** $F(\sqrt{\alpha})\oplus F(\sqrt{\beta})\oplus F$.
+2. **Biquadratic extensions:** $K\oplus F$, where $K/F$ is biquadratic.
+3. **Quartic field extensions:** $E\oplus F$, where $E/F$ is a quartic field extension.
 
 For each family, the objective is to construct an explicit Witt basis directly from the torus parameters and subsequently use these coordinates to study the corresponding points in the Bruhat–Tits building.
 
