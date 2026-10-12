@@ -69,7 +69,7 @@ $$
 q(x,y,z)=\mu_1N_\alpha(x)+\mu_2N_\beta(y)+\lambda z^2,
 $$
 
-where \(N_\alpha\) and \(N_\beta\) denote the corresponding quadratic field norms.
+where $N_\alpha$and $N_\beta$ denote the corresponding quadratic field norms.
 
 The algorithm constructs an explicit Witt basis
 
@@ -81,8 +81,8 @@ under the relevant admissibility and norm conditions.
 
 The implementation distinguishes two cases:
 
-- **Equal quadratic extensions:** \(\alpha=\beta\), with explicit constructions using solutions of the corresponding norm equation.
-- **Distinct quadratic extensions:** \(\alpha\ne\beta\), using norm witnesses and the appropriate Hilbert-symbol conditions.
+- **Equal quadratic extensions:** $\alpha=\beta$, with explicit constructions using solutions of the corresponding norm equation.
+- **Distinct quadratic extensions:** $\alpha\ne\beta$, using norm witnesses and the appropriate Hilbert-symbol conditions.
 
 The original implementation has been tested on 36 admissible parameter configurations.
 
