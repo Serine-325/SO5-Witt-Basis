@@ -1,5 +1,17 @@
 # Explicit Witt Bases and Bruhat–Tits Buildings for Elliptic Tori in Split SO(5)
 
+## Run the Interactive Witt Basis Constructor
+
+**[Launch the Witt Basis Constructor](https://so5-witt-basis.onrender.com/)**
+
+This web application allows visitors to construct explicit Witt bases for elliptic maximal tori in split SO(5) arising from sums of two quadratic extensions.
+
+Select the quadratic classes and coefficients, verify the admissibility conditions, and construct a Witt basis.
+
+No Python installation or GitHub account is required.
+
+**Current scope:** Sums of two quadratic extensions.
+  
 ## Project Overview
 
 This project develops computational methods for studying elliptic maximal tori in the split special orthogonal group
@@ -34,15 +46,15 @@ For each case, the project aims to construct an explicit Witt basis and use it t
 
 For the quadratic form
 
-\[
+$$
 q(x,y,z)=\mu_1N_\alpha(x)+\mu_2N_\beta(y)+\lambda z^2,
-\]
+$$
 
 the program constructs a Witt basis
 
-\[
+$$
 \mathcal B^*=\{e_1,e_2,f_1,f_2,g_1\}
-\]
+$$
 
 satisfying the required isotropy, normalization, and orthogonality conditions.
 
