@@ -148,20 +148,21 @@ $$
 In the ordered basis
 
 $$
-(e_1,f_1,e_2,f_2,g_1),
+(e_1,e_2,f_1,f_2,g_1),
 $$
 
 the expected Gram matrix is
 
-$$
+```math
+\mathrm{Gram}(\mathcal B)=
 \begin{pmatrix}
-0&1&0&0&0\\
-1&0&0&0&0\\
-0&0&0&1&0\\
 0&0&1&0&0\\
+0&0&0&1&0\\
+1&0&0&0&0\\
+0&1&0&0&0\\
 0&0&0&0&1
-\end{pmatrix}.
-$$
+\end{pmatrix}
+```
 
 The biquadratic implementation uses SymPy to verify these identities symbolically, avoiding floating-point approximations.
 
