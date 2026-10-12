@@ -43,7 +43,7 @@ def add_vectors(x, y):
 def test_all_biquadratic_cases(square, alpha, beta, mode, t, order):
     result = construct_biquadratic(square, alpha, beta, mode, t, "2", order)
     assert result.verified
-    vectors = [result.basis[n] for n in ("e1", "f1", "e2", "f2", "g1")]
+    vectors = [result.basis[n] for n in ("e1", "e2", "f1", "f2", "g1")]
     for i, v in enumerate(vectors):
         qv = original_trace_quadratic(v, result.alpha, result.beta, result.mu0, result.mu1, result.rho)
         assert sp.cancel(qv - (1 if i == 4 else 0)) == 0
@@ -62,7 +62,7 @@ def test_unramified_minus_one_nonsquare_special(beta, order):
     assert (r.mu0, r.mu1) == (1, 0)
     assert sp.simplify(r.alpha+1) == 0
     # The special vectors are independently checked using the trace expression.
-    vectors = [r.basis[n] for n in ("e1", "f1", "e2", "f2", "g1")]
+    vectors = [r.basis[n] for n in ("e1", "e2", "f1", "f2", "g1")]
     for i, v in enumerate(vectors):
         for j, w in enumerate(vectors):
             qsum = original_trace_quadratic(add_vectors(v,w), r.alpha, r.beta, r.mu0, r.mu1, r.rho)

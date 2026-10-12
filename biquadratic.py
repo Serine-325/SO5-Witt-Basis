@@ -129,6 +129,7 @@ class BiquadraticResult:
             [0, 0, 1, 0, 0],
             [0, 0, 0, 0, 1],
         ])
+        expected = expected.extract([0, 2, 1, 3, 4], [0, 2, 1, 3, 4])
         return all(sp.cancel(a - b) == 0 for a, b in zip(self.gram, expected)) and (
             self.norm_check is None or all(sp.cancel(x) == 0 for x in self.norm_check)
         )
@@ -288,7 +289,7 @@ def construct_biquadratic(
             basis["f1"], basis["f2"] = basis["f2"], basis["f1"]
             swapped = True
 
-    order = ("e1", "f1", "e2", "f2", "g1")
+    order = ("e1", "e2", "f1", "f2", "g1")
     gram = sp.Matrix(5, 5, lambda i, j: bilinear(
         basis[order[i]], basis[order[j]], alpha, beta, mu0, mu1, rho
     ))
