@@ -65,7 +65,7 @@ with tab_sum:
     if st.session_state.get("sum_params") == params and "sum_result" in st.session_state:
         result = st.session_state["sum_result"]
         st.markdown(f"**Case {result.case}** · Square class of λ: `{result.lam}`")
-        for name in ("e1", "f1", "e2", "f2", "g1"):
+        for name in ("e1", "e2", "f1", "f2", "g1"):
             st.code(f"{name} = {result.basis[name]}", language="text")
         if result.witnesses:
             st.markdown("**Norm witnesses**")
@@ -171,13 +171,13 @@ with tab_biquad:
             st.latex(r"t=" + result.t.latex())
             st.latex(r"\mu N_{K/E_1}(t)=A")
         st.markdown("**Witt basis**")
-        for name in ("e1", "f1", "e2", "f2", "g1"):
+        for name in ("e1", "e2", "f1", "f2", "g1"):
             v = result.basis[name]
             st.latex(name.replace("1", "_1").replace("2", "_2") + "=" + v.latex())
             st.caption(f"{name} coordinates (a,b,c,d,z): " + str((*v.x.coords(), v.z)))
         if result.swapped_pairs:
             st.info("The two complete hyperbolic pairs were interchanged to put the ramified square class first.")
-        st.markdown("**Verified Gram matrix** (order: e₁, f₁, e₂, f₂, g₁)")
+        st.markdown("**Verified Gram matrix** (order: e₁, e₂, f₁, f₂, g₁)")
         st.latex(sp.latex(result.gram))
         with st.expander("Show quadratic form and verification notes"):
             st.latex(r"q_{\mu,\lambda}(x,z)=" + result.q_latex())
