@@ -104,7 +104,7 @@ $$
 
 be one of its three quadratic intermediate fields.
 
-Writing \(\sigma\) for the nontrivial automorphism of \(K/E_1\), consider the quadratic form
+Writing $\sigma$ for the nontrivial automorphism of $K/E_1$, consider the quadratic form
 
 $$
 q_{\mu,\lambda}(x,z)
