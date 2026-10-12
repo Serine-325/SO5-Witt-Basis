@@ -108,9 +108,8 @@ Writing \(\sigma\) for the nontrivial automorphism of \(K/E_1\), consider the qu
 
 $$
 q_{\mu,\lambda}(x,z)
-=\operatorname{Tr}_{K/F}\left(\frac{\mu}{4}x\sigma(x)\right)+\lambda z^2.
+=\mathrm{Tr}_{K/F}\left(\frac{\mu}{4}x\sigma(x)\right)+\lambda z^2.
 $$
-
 The construction uses the relative norm map
 
 $$
