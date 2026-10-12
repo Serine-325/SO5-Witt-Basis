@@ -69,7 +69,7 @@ $$
 q(x,y,z)=\mu_1N_\alpha(x)+\mu_2N_\beta(y)+\lambda z^2,
 $$
 
-where $N_\alpha$and $N_\beta$ denote the corresponding quadratic field norms.
+where $N_\alpha$ and $N_\beta$ denote the corresponding quadratic field norms.
 
 The algorithm constructs an explicit Witt basis
 
