@@ -2,16 +2,23 @@
 
 ## Run the Interactive Witt Basis Constructor
 
-**[Launch the Witt Basis Constructor](https://so5-witt-basis.onrender.com/)**
+[Launch the Witt Basis Constructor](https://so5-witt-basis.onrender.com/)
 
-This web application allows visitors to construct explicit Witt bases for elliptic maximal tori in split SO(5) arising from sums of two quadratic extensions.
+This interactive Python application constructs and verifies explicit Witt bases associated with elliptic maximal tori in split SO(5).
 
-Select the quadratic classes and coefficients, verify the admissibility conditions, and construct a Witt basis.
+The application currently supports two families:
 
-No Python installation or GitHub account is required.
+1. **Sums of two quadratic extensions:** Construct Witt bases from the parameters of two quadratic field extensions, including the relevant norm conditions.
 
-**Current scope:** Sums of two quadratic extensions.
-  
+2. **Biquadratic extensions:** Construct Witt bases using a biquadratic field extension and a chosen quadratic intermediate field. The program performs exact symbolic verification of the resulting Gram matrix.
+
+For both families, users can select mathematical parameters and inspect the resulting Witt basis.
+
+The application is developed using Python, Streamlit, and SymPy.
+
+No Python installation or GitHub account is required to use the online application.
+
+**Current scope:** Explicit Witt basis constructions for sums of two quadratic extensions and biquadratic extensions.
 ## Project Overview
 
 This project develops computational methods for studying elliptic maximal tori in the split special orthogonal group
