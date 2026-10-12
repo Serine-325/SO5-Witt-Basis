@@ -106,10 +106,11 @@ be one of its three quadratic intermediate fields.
 
 Writing $\sigma$ for the nontrivial automorphism of $K/E_1$, consider the quadratic form
 
-$$
-q_{\mu,\lambda}(x,z)
-=\mathrm{Tr}_{K/F}\left(\frac{\mu}{4}x\sigma(x)\right)+\lambda z^2.
-$$
+
+```math
+q_{\mu,\lambda}(x,z)=\mathrm{Tr}_{K/F}\left(\frac{\mu}{4}x\sigma(x)\right)+\lambda z^2
+```
+
 The construction uses the relative norm map
 
 $$
