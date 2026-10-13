@@ -1,7 +1,7 @@
 """Streamlit interface for both established SO(5) Witt basis families."""
 import streamlit as st
 import sympy as sp
-
+from verification_panel import render_sum_verification
 from web_runner import CLASSES, MU_OPTIONS, run_constructor, valid_parameters
 from biquadratic import construct_biquadratic
 
@@ -77,7 +77,7 @@ with tab_sum:
             "Download Stage 1 result (.txt)", data=result.raw_output,
             file_name="SO5_Sum_Quadratics_Witt_Basis.txt", mime="text/plain",
         )
-
+        render_sum_verification(result)
 with tab_biquad:
     st.subheader("Biquadratic extension")
     st.latex(r"K=F(A,B),\quad A^2=\alpha,\quad B^2=\beta,\quad E_1=F(A)")
