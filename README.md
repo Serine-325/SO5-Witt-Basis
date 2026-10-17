@@ -240,6 +240,199 @@ print(pure_quartic_gram(3, 1))
 
 All calculations use exact SymPy expressions rather than floating-point approximations.
 
+#### Worked Example: Exceptional Unramified Quartic Extension
+
+We consider the local field \(F=\mathbb Q_3\), for which \(-1\) is not a square.
+
+Let
+
+\[
+E_1=F(i),\qquad i^2=-1.
+\]
+
+Choose \(t=1\) and let \(s\in\mathbb Q_3\) satisfy
+
+\[
+s^4=-2,\qquad s\equiv1\pmod3.
+\]
+
+Such an element exists by Hensel's lemma, applied to \(X^4+2\) at \(X=1\).
+
+Define
+
+\[
+\eta=s^2+i,\qquad K=E_1(\sqrt{\eta}).
+\]
+
+Then
+
+\[
+N_{E_1/F}(\eta)=s^4+1=-1.
+\]
+
+Consequently, \(\eta\) is not a square in \(E_1\), and \(K/F\) is a cyclic quartic extension with unique quadratic subfield \(E_1\).
+
+For the exceptional unramified construction, the parameters are
+
+\[
+d=\eta,\qquad \mu_4=1,\qquad\lambda=-1.
+\]
+
+**Explicit Witt basis**
+
+Using the coordinate order \((x_0,x_1,x_2,x_3,z)\), the Python implementation produces
+
+\[
+\begin{aligned}
+e_1&=(1,1,0,0,0),\\
+e_2&=(0,0,0,1/s,1),\\
+f_1&=(1/2,-1/2,0,0,0),\\
+f_2&=(0,0,0,1/(2s),-1/2),\\
+g_1&=(0,0,s,-1/s,0).
+\end{aligned}
+\]
+
+**Symbolic verification**
+
+The Gram matrix is computed using the symmetric bilinear form
+
+\[
+B(u,v)=\frac{q(u+v)-q(u)-q(v)}{2}.
+\]
+
+Reducing its entries under the defining relation \(s^4+2=0\) gives
+
+\[
+\operatorname{Gram}(e_1,e_2,f_1,f_2,g_1)=
+\begin{pmatrix}
+0&0&1&0&0\\
+0&0&0&1&0\\
+1&0&0&0&0\\
+0&1&0&0&0\\
+0&0&0&0&1
+\end{pmatrix}.
+\]
+
+The construction can be reproduced using:
+
+```python
+import sympy as sp
+from quartic import exceptional_quartic_basis, exceptional_quartic_gram
+
+s = sp.Symbol("s", nonzero=True)
+
+basis = exceptional_quartic_basis(s, 1)
+gram = exceptional_quartic_gram(s, 1)
+
+for name, vector in zip(("e1", "e2", "f1", "f2", "g1"), basis):
+    print(name, list(vector))
+
+print("Gram matrix:")
+print(gram)
+```
+
+The entries of the Gram matrix are to be simplified using \(s^4=-2\).
+
+This example demonstrates the explicit Witt basis construction for an admissible exceptional unramified quartic torus. The symbolic verification establishes the required Gram identities, while the existence of the local-field parameter \(s\) follows independently from Hensel's lemma.
+
+#### Worked Example: Exceptional Twisted Quartic Extension
+
+We continue working over the local field \(F=\mathbb Q_3\), with
+
+\[
+E_1=F(i),\qquad i^2=-1.
+\]
+
+Let \(s\in\mathbb Q_3\) satisfy \(s^4=-2\) and \(s\equiv1\pmod3\), and set
+
+\[
+t=1,\qquad \eta=s^2+i,\qquad \varpi=3.
+\]
+
+The existence of \(s\) follows from Hensel's lemma, as established in the preceding example.
+
+For the exceptional twisted construction, choose
+
+\[
+d=3\eta,\qquad \mu_4=\eta,\qquad \lambda=-1.
+\]
+
+Since
+
+\[
+N_{E_1/F}(d)=9(s^4+1)=-9,
+\]
+
+the norm has nonsquare class \(-1\) in \(F\). Thus \(K=E_1(\sqrt{3\eta})\) is a cyclic quartic extension with unique quadratic subfield \(E_1\).
+
+**Explicit Witt basis**
+
+In the coordinate order \((x_0,x_1,x_2,x_3,z)\), the construction produces the following vectors, simplified using \(s^4=-2\):
+
+\[
+\begin{aligned}
+e_1&=(0,0,-s^2-1,1-s^2,0),\\
+e_2&=(-1/s,0,0,0,1),\\
+f_1&=(0,0,(s^2-1)/6,-(s^2+1)/6,0),\\
+f_2&=(-1/(2s),0,0,0,-1/2),\\
+g_1&=(1/s,s,0,0,0).
+\end{aligned}
+\]
+
+**Symbolic verification**
+
+The symmetric bilinear form is defined by
+
+\[
+B(u,v)=\frac{q(u+v)-q(u)-q(v)}{2}.
+\]
+
+Reducing the entries under the relation \(s^4+2=0\) yields
+
+\[
+\operatorname{Gram}(e_1,e_2,f_1,f_2,g_1)=
+\begin{pmatrix}
+0&0&1&0&0\\
+0&0&0&1&0\\
+1&0&0&0&0\\
+0&1&0&0&0\\
+0&0&0&0&1
+\end{pmatrix}.
+\]
+
+The example can be reproduced using the existing Python implementation:
+
+```python
+import sympy as sp
+from quartic import (
+    exceptional_twisted_quartic_basis,
+    exceptional_twisted_quartic_gram,
+    TARGET_GRAM,
+)
+
+s = sp.Symbol("s", nonzero=True)
+
+basis = exceptional_twisted_quartic_basis(s, 1, 3)
+gram = exceptional_twisted_quartic_gram(s, 1, 3)
+
+for name, vector in zip(("e1", "e2", "f1", "f2", "g1"), basis):
+    print(name, list(vector))
+
+difference = gram - TARGET_GRAM
+
+def reduce_numerator(expression):
+    numerator, denominator = sp.fraction(sp.cancel(expression))
+    assert sp.rem(denominator, s**4 + 2, s) != 0
+    return sp.rem(numerator, s**4 + 2, s)
+
+reduced_difference = difference.applyfunc(reduce_numerator)
+assert reduced_difference == sp.zeros(5)
+
+print("Gram matrix verification passed.")
+```
+
+This verifies the Witt basis identities exactly under the defining algebraic relation. The symbolic calculation does not approximate \(3\)-adic numbers; the local-field existence of the parameter \(s\) is established separately by Hensel's lemma.
+
 ### 4. Verification of the Witt Basis
 
 The constructed vectors are required to satisfy
