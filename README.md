@@ -4,21 +4,24 @@
 
 [Launch the Witt Basis Constructor](https://so5-witt-basis.onrender.com/)
 
-This interactive Python application constructs and verifies explicit Witt bases associated with elliptic maximal tori in split SO(5).
+This interactive Python application constructs and symbolically verifies explicit Witt bases associated with elliptic maximal tori in the split special orthogonal group SO(5).
 
-The application currently supports two families:
+The application currently supports three families:
 
-1. **Sums of two quadratic extensions:** Construct Witt bases from the parameters of two quadratic field extensions, including the relevant norm conditions.
+1. **Sums of two quadratic extensions:** Construct Witt bases from the parameters of two quadratic field extensions, subject to the relevant norm and admissibility conditions.
 
-2. **Biquadratic extensions:** Construct Witt bases using a biquadratic field extension and a chosen quadratic intermediate field. The program performs exact symbolic verification of the resulting Gram matrix.
+2. **Biquadratic extensions:** Construct Witt bases using a biquadratic field extension and a selected quadratic intermediate field.
 
-For both families, users can select mathematical parameters and inspect the resulting Witt basis.
+3. **Quartic field extensions with a unique quadratic subfield:** Construct Witt bases for the pure quartic and two exceptional unramified cases, using explicit formulas and their defining algebraic relations.
 
-The application is developed using Python, Streamlit, and SymPy.
+For each implemented family, users can explore the mathematical parameters, inspect the constructed Witt basis, and verify the corresponding Gram matrix symbolically.
+
+The application is developed using **Python, SymPy, and Streamlit**, with automated mathematical tests implemented using **pytest and GitHub Actions**.
 
 No Python installation or GitHub account is required to use the online application.
 
-**Current scope:** Explicit Witt basis constructions for sums of two quadratic extensions and biquadratic extensions.
+**Current scope:** Explicit Witt basis constructions and symbolic Gram-matrix verification for all three families. Bruhat–Tits building computations remain a future research objective.
+
 ## Project Overview
 
 This project develops computational methods for studying elliptic maximal tori in the split special orthogonal group
@@ -128,13 +131,57 @@ The algorithm:
 5. Performs exact symbolic verification of the resulting Witt basis.
 
 The implementation includes automated tests for the biquadratic construction.
+### 3. Quartic Witt Basis Constructions
 
-### 3. Verification of the Witt Basis
+The module `quartic.py` implements symbolic Witt basis constructions for three families of quartic elliptic tori in the split group SO(5).
+
+#### Implemented cases
+
+1. **Pure quartic case:** `d = r*sqrt(alpha)`, with `mu4 = 1`.
+   When `-1` is a square in `F`, the application uses `lambda = alpha`.
+   Otherwise, it uses `lambda = -alpha*r**2`.
+2. **Exceptional unramified case:** `d = eta`, with `mu4 = 1` and `lambda = -1`.
+
+3. **Exceptional twisted case:** `d = eta*pi`, with `mu4 = eta` and `lambda = -1`.
+
+For the exceptional cases, `eta = s**2 + i*t**2`, where `i**2 = -1` and `s**4 + t**4 = -1`.
+
+#### Symbolic verification
+
+Each construction produces five vectors in the order `(e1, e2, f1, f2, g1)`.
+
+SymPy computes the associated Gram matrix using the polar form
+
+`B(u,v) = (q(u+v) - q(u) - q(v))/2`.
+
+The target Gram matrix is
+
+```text
+[0 0 1 0 0]
+[0 0 0 1 0]
+[1 0 0 0 0]
+[0 1 0 0 0]
+[0 0 0 0 1]
+```
+
+For the exceptional cases, the final entry simplifies to 1 under the assumption `s**4 + t**4 = -1`.
+
+The symbolic checks verify the constructed bases under their stated assumptions. They do not independently solve norm equations or establish local-field admissibility.
+
+#### Running the tests
+
+```bash
+python -m pytest -q
+```
+
+The quartic tests are located in `tests/test_quartic.py`.
+
+### 4. Verification of the Witt Basis
 
 The constructed vectors are required to satisfy
 
 $$
-q(e_i)=q(f_i)=0,\qquad(e_i,f_j)=\delta_{ij},
+q(e_i)=q(f_i)=0,\qquad B(e_i,f_j)=\delta_{ij},
 $$
 
 together with vanishing cross-pairings and the normalization of \(g_1\).
@@ -142,7 +189,7 @@ together with vanishing cross-pairings and the normalization of \(g_1\).
 Here the symmetric bilinear pairing is defined by
 
 $$
-(u,v)=q(u+v)-q(u)-q(v).
+B(u,v)=\frac{q(u+v)-q(u)-q(v)}{2}.
 $$
 
 In the ordered basis
@@ -168,16 +215,22 @@ The biquadratic implementation uses SymPy to verify these identities symbolicall
 
 Symbolic verification confirms the algebraic identities of the constructed vectors. Existence of the required norm witnesses over the local field is justified by the mathematical norm conditions.
 
-### 4. Software Organization
+### 5. Software Organization
 
 | File | Description |
 |---|---|
-| `Witt_Basis_Sum_Quadratics.py` | Construction for sums of two quadratic extensions |
-| `biquadratic.py` | Construction for biquadratic extensions |
-| `web_runner.py` | Connects the original construction to the web application |
-| `app.py` | Streamlit interface for both constructions |
-| `tests/test_biquadratic.py` | Automated tests for the biquadratic construction |
-| `requirements.txt` | Python dependencies |
+| `Witt_Basis_Sum_Quadratics.py` | Constructs Witt bases for sums of two quadratic extensions. |
+| `biquadratic.py` | Constructs Witt bases for biquadratic extensions. |
+| `quartic.py` | Constructs symbolic Witt bases for three quartic cases. |
+| `app.py` | Streamlit interface for all three families. |
+| `web_runner.py` | Connects the quadratic construction to the web application. |
+| `verification_panel.py` | Provides supporting verification functionality. |
+| `tests/` | Contains automated tests for the mathematical constructions. |
+| `tests/test_biquadratic.py` | Tests the biquadratic Witt basis constructions. |
+| `tests/test_quartic.py` | Tests the quartic Witt basis constructions. |
+| `.github/workflows/tests.yml` | Runs the Python test suite automatically using GitHub Actions. |
+| `requirements.txt` | Lists the Python dependencies. |
+| `README.md` | Documents the mathematical framework, implementation, and research objectives. |
 
 The interactive application is available through the link at the beginning of this README.
 
@@ -187,7 +240,7 @@ The interactive application is available through the link at the beginning of th
 
 - [x] Sums of two quadratic extensions — implemented and tested.
 - [x] Biquadratic extensions — implemented with exact symbolic verification and automated tests.
-- [ ] Quartic field extensions — planned.
+- [x] Quartic field extensions with a unique quadratic subfield — implemented and tested.
 
 ### Stage 2 — Bruhat–Tits Building Computations
 
@@ -204,54 +257,11 @@ The interactive application is available through the link at the beginning of th
 - [ ] Document the mathematical proofs and their relationship to the algorithms.
 - [x] Implement symbolic Witt basis constructions for the three quartic cases.
 - [x] Verify their Gram matrices using SymPy.
-- [ ] Integrate the quartic constructions into the interactive application.
+- [x] Integrate the quartic constructions into the interactive application.
 - [ ] Add worked examples and document the mathematical assumptions.
-## Author
 
-## Quartic Witt Basis Constructions
 
-The module `quartic.py` implements symbolic Witt basis constructions for three families of quartic elliptic tori in the split group SO(5).
 
-### Implemented cases
-
-1. **Pure quartic case:** `d = r*sqrt(alpha)`, with `mu4 = 1`.
-   When `-1` is a square in `F`, the application uses `lambda = alpha`.
-   Otherwise, it uses `lambda = -alpha*r**2`.
-2. **Exceptional unramified case:** `d = eta`, with `mu4 = 1` and `lambda = -1`.
-
-3. **Exceptional twisted case:** `d = eta*pi`, with `mu4 = eta` and `lambda = -1`.
-
-For the exceptional cases, `eta = s**2 + i*t**2`, where `i**2 = -1` and `s**4 + t**4 = -1`.
-
-### Symbolic verification
-
-Each construction produces five vectors in the order `(e1, e2, f1, f2, g1)`.
-
-SymPy computes the associated Gram matrix using the polar form
-
-`B(u,v) = (q(u+v) - q(u) - q(v))/2`.
-
-The target Gram matrix is
-
-```text
-[0 0 1 0 0]
-[0 0 0 1 0]
-[1 0 0 0 0]
-[0 1 0 0 0]
-[0 0 0 0 1]
-```
-
-For the exceptional cases, the final entry simplifies to 1 under the assumption `s**4 + t**4 = -1`.
-
-The symbolic checks verify the constructed bases under their stated assumptions. They do not independently solve norm equations or establish local-field admissibility.
-
-### Running the tests
-
-```bash
-python -m pytest -q
-```
-
-The quartic tests are located in `tests/test_quartic.py`.
 ## Author
 **Serine Bairakji**
 
