@@ -176,6 +176,70 @@ python -m pytest -q
 
 The quartic tests are located in `tests/test_quartic.py`.
 
+#### Worked Example: Pure Quartic Extension
+
+Consider the pure quartic case with parameters
+
+\[
+\alpha=3,\qquad r=1,\qquad \mu_4=1,\qquad \lambda=-3.
+\]
+
+These parameters may be interpreted over the local field \(\mathbb Q_5\).
+
+The associated quadratic form is
+
+\[
+q(x_0,x_1,x_2,x_3,z)
+=x_0^2+3x_1^2-6x_2x_3-3z^2.
+\]
+
+The Python implementation constructs the following Witt basis:
+
+\[
+\begin{aligned}
+e_1&=(0,0,1,0,0),\\
+e_2&=(0,1,0,0,1),\\
+f_1&=(0,0,0,-1/3,0),\\
+f_2&=(0,1/6,0,0,-1/6),\\
+g_1&=(1,0,0,0,0).
+\end{aligned}
+\]
+
+With respect to the normalized polar form
+
+\[
+B(u,v)=\frac{q(u+v)-q(u)-q(v)}{2},
+\]
+
+the Gram matrix in the ordered basis \((e_1,e_2,f_1,f_2,g_1)\) is
+
+\[
+\begin{pmatrix}
+0&0&1&0&0\\
+0&0&0&1&0\\
+1&0&0&0&0\\
+0&1&0&0&0\\
+0&0&0&0&1
+\end{pmatrix}.
+\]
+
+Thus, the construction produces two hyperbolic pairs and an anisotropic vector of norm one, as required for the split five-dimensional quadratic space.
+
+**Reproduce the calculation:**
+
+```python
+from quartic import pure_quartic_basis, pure_quartic_gram
+
+basis = pure_quartic_basis(3, 1)
+
+for vector in basis:
+    print(list(vector))
+
+print(pure_quartic_gram(3, 1))
+```
+
+All calculations use exact SymPy expressions rather than floating-point approximations.
+
 ### 4. Verification of the Witt Basis
 
 The constructed vectors are required to satisfy
