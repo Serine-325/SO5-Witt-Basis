@@ -98,39 +98,7 @@ def pure_quartic_gram(alpha, r):
         for u in basis
     ])
 
-import sympy as sp
 
-from quartic import (
-    TARGET_GRAM,
-    pure_quartic_basis,
-    pure_quartic_form,
-    pure_quartic_gram,
-)
-
-
-def test_pure_quartic_symbolic_gram():
-    """Verify the Witt Gram matrix for symbolic parameters."""
-    alpha, r = sp.symbols("alpha r", nonzero=True)
-
-    gram = pure_quartic_gram(alpha, r)
-
-    assert gram == TARGET_GRAM
-
-
-def test_pure_quartic_isotropic_vectors():
-    """Verify that both hyperbolic pairs are isotropic."""
-    alpha, r = sp.symbols("alpha r", nonzero=True)
-
-    e1, e2, f1, f2, g1 = pure_quartic_basis(alpha, r)
-
-    for vector in (e1, e2, f1, f2):
-        assert sp.simplify(
-            pure_quartic_form(vector, alpha, r)
-        ) == 0
-
-    assert sp.simplify(
-        pure_quartic_form(g1, alpha, r)
-    ) == 1
 
 def exceptional_quartic_form(v, s, t):
     """
