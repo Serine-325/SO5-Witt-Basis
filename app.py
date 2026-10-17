@@ -19,9 +19,10 @@ st.markdown(
     "verification of the Gram matrix."
 )
 
-tab_sum, tab_biquad = st.tabs([
+tab_sum, tab_biquad, tab_quartic = st.tabs([
     "Sums of two quadratic extensions",
     "Biquadratic extension",
+    "Quartic extensions",
 ])
 
 with tab_sum:
@@ -193,10 +194,387 @@ with tab_biquad:
 
 st.divider()
 st.markdown(
-    "**Research scope:** explicit Witt bases for sums of two quadratic extensions "
-    "and for biquadratic extensions. Quartic extensions and Bruhat–Tits "
-    "building calculations are not implemented here."
+    "**Research scope:** explicit Witt bases for elliptic maximal tori "
+    "in split SO(5), including sums of two quadratic extensions, "
+    "biquadratic extensions, and quartic extensions with a unique "
+    "quadratic subfield. The application provides symbolic Gram-matrix "
+    "verification. Bruhat–Tits building calculations are not implemented here."
 )
 st.markdown(
     "Source repository: [SO5-Witt-Basis](https://github.com/Serine-325/SO5-Witt-Basis)."
 )
+
+with tab_quartic:
+    st.subheader("Quartic Extensions")
+
+    st.markdown(
+        "Constructive Witt bases for quartic elliptic tori "
+        "in the split group SO(5)."
+    )
+
+    
+    import sympy as sp
+
+    minus_one_square = st.radio(
+        "Is -1 a square in F?",
+        ["Yes", "No"],
+        horizontal=True,
+        key="quartic_minus_one_square",
+    )
+
+    epsilon = sp.Symbol("epsilon", nonzero=True)
+    varpi = sp.Symbol("varpi", nonzero=True)
+
+    if minus_one_square == "Yes":
+        subfield_options = [
+            "F(sqrt(epsilon))",
+            "F(sqrt(varpi))",
+            "F(sqrt(epsilon*varpi))",
+        ]
+    else:
+        subfield_options = [
+            "F(sqrt(-1))",
+            "F(sqrt(varpi))",
+            "F(sqrt(epsilon*varpi))",
+        ]
+
+    subfield = st.selectbox(
+        "Choose the quadratic subfield E1",
+        subfield_options,
+        key="quartic_subfield",
+    )
+
+    alpha_options = {
+        "F(sqrt(epsilon))": epsilon,
+        "F(sqrt(varpi))": varpi,
+        "F(sqrt(epsilon*varpi))": epsilon * varpi,
+    }
+    alpha_label = {
+        "F(sqrt(epsilon))": "epsilon",
+        "F(sqrt(varpi))": "varpi",
+        "F(sqrt(epsilon*varpi))": "epsilon*varpi",
+    }.get(subfield, "alpha")      
+    if subfield == "F(sqrt(-1))":
+        d_options = ["eta", "eta*varpi"]
+    elif minus_one_square == "Yes":
+        if subfield == "F(sqrt(epsilon))":
+            d_options = ["sqrt(epsilon)", "varpi*sqrt(epsilon)"]
+        else:
+            d_options = ["sqrt(alpha)", "epsilon*sqrt(alpha)"]
+    else:
+        d_options = ["sqrt(alpha)"]
+
+    d_choice = st.selectbox(
+        "Choose the quartic parameter d",
+        d_options,
+        format_func=lambda d: d.replace(
+        "sqrt(alpha)", f"sqrt({alpha_label})"
+        ),
+        key="quartic_d",
+    )
+
+    if d_choice == "eta":
+        quartic_case = "Exceptional unramified: d = eta"
+    elif d_choice == "eta*varpi":
+        quartic_case = "Exceptional twisted: d = eta*pi"
+    else:
+        quartic_case = "Pure quartic extension"
+        alpha_value = alpha_options[subfield]
+
+        # d = b * sqrt(alpha)
+        # The current quartic constructor uses r_value as b.
+
+        d_coefficients = {
+            "sqrt(epsilon)": sp.Integer(1),
+            "sqrt(alpha)": sp.Integer(1),
+            "varpi*sqrt(epsilon)": varpi,
+            "epsilon*sqrt(alpha)": epsilon,
+        }
+
+        r_value = d_coefficients[d_choice]
+
+    st.info(
+        "The quartic constructions will be displayed here, "
+        "together with their symbolic Gram-matrix verification."
+    )
+
+    if quartic_case == "Pure quartic extension":
+        from quartic import (
+            pure_quartic_basis,
+            pure_quartic_gram,
+            TARGET_GRAM,
+        )
+        import sympy as sp
+
+        st.markdown("### Pure quartic Witt basis")
+
+       
+
+        alpha = alpha_options[subfield]
+        r = r_value
+
+        basis = pure_quartic_basis(alpha, r)
+
+        if minus_one_square == "Yes":
+            # i^2 = -1 in F
+            # Change lambda from -alpha*r^2 to alpha.
+            corrected_basis = []
+
+            for vector in basis:
+                v = vector.copy()
+                v[4] = sp.I * r * v[4]
+                corrected_basis.append(v)
+
+            basis = corrected_basis
+            lambda_value = alpha
+
+        else:
+            lambda_value = -alpha * r**2
+
+        # Gram matrix for the selected quadratic form
+        Q = sp.Matrix([
+            [1, 0, 0, 0, 0],
+            [0, alpha, 0, 0, 0],
+            [0, 0, 0, -alpha*r, 0],
+            [0, 0, -alpha*r, 0, 0],
+            [0, 0, 0, 0, lambda_value],
+        ])
+
+        P = sp.Matrix.hstack(*basis)
+        gram = sp.simplify(P.T * Q * P)
+        st.latex(
+            r"\alpha=" + sp.latex(alpha)
+            + r",\quad d=" + sp.latex(r) + r"\sqrt{" + sp.latex(alpha) + "}"
+            + r",\quad \mu_4=1"
+            + r",\quad \lambda=" + sp.latex(lambda_value)
+        )
+        st.markdown("**Definition of the quartic extension**")
+
+        st.latex(
+            r"E_1=F(\sqrt{\alpha}),\qquad "
+            r"K=E_1(\delta),\qquad \delta^2=d"
+        )
+
+        st.latex(
+            r"\delta^2="
+            + sp.latex(r * sp.sqrt(alpha))
+        )
+        if minus_one_square == "Yes":
+            st.latex(r"i\in F,\qquad i^2=-1")
+        st.markdown("**Constructed Witt basis in the original basis**")
+
+        delta = sp.Symbol("delta")
+        sqrt_alpha = sp.sqrt(alpha)
+
+        original_basis = [
+            sp.S.One,
+            sqrt_alpha,
+            delta,
+            sqrt_alpha * delta,
+        ]
+
+        for name, vector in zip(
+            ["e_1", "e_2", "f_1", "f_2", "g_1"],
+            basis,
+        ):
+            x = sum(
+                (vector[i] * original_basis[i] for i in range(4)),
+                sp.S.Zero,
+            )
+            z = vector[4]
+
+            st.latex(
+                name
+                + r"=\left("
+                + sp.latex(x)
+                + r",\,"
+                + sp.latex(z)
+                + r"\right)"
+            )
+
+
+        st.markdown("**Computed Gram matrix**")
+        st.latex(sp.latex(gram))
+
+        if gram == TARGET_GRAM:
+            st.success("Symbolic verification successful.")
+        else:
+            st.error("Gram matrix verification failed.")
+    elif quartic_case == "Exceptional unramified: d = eta":
+
+        from quartic import (
+            exceptional_quartic_basis,
+            exceptional_quartic_gram,
+            TARGET_GRAM,
+        )
+
+        import sympy as sp
+
+        st.markdown("### Exceptional unramified quartic Witt basis")
+
+        s, t = sp.symbols("s t", nonzero=True)
+        i = sp.Symbol("i")
+        delta = sp.Symbol("delta")
+
+        eta = s**2 + i * t**2
+
+        st.markdown("**Definition of the quartic extension**")
+
+        st.latex(
+            r"E_1=F(i),\qquad i^2=-1,\qquad "
+            r"K=E_1(\delta)"
+        )
+
+        st.latex(
+            r"\eta=s^2+it^2,\qquad "
+            r"s^4+t^4=-1,\qquad "
+            r"\delta^2=\eta"
+        )
+
+        st.latex(
+            r"\mu_4=1,\qquad \lambda=-1"
+        )
+
+        # Construct the Witt basis
+        basis = exceptional_quartic_basis(s, t)
+
+        # Original F-basis of K
+        original_basis = [
+            sp.Integer(1),
+            i,
+            delta,
+            i * delta,
+        ]
+
+        st.markdown(
+            "**Constructed Witt basis in the original basis**"
+        )
+
+        for name, vector in zip(
+            ["e_1", "e_2", "f_1", "f_2", "g_1"],
+            basis,
+        ):
+            x = sp.expand(
+                sum(
+                    vector[j] * original_basis[j]
+                    for j in range(4)
+                )
+            )
+
+            z = vector[4]
+
+            st.latex(
+                name
+                + r"=\left("
+                + sp.latex(x)
+                + r",\,"
+                + sp.latex(z)
+                + r"\right)"
+            )
+
+        # Compute the Gram matrix
+        gram = exceptional_quartic_gram(s, t)
+
+        # Apply the defining relation s^4 + t^4 = -1
+        gram_reduced = gram.applyfunc(
+            lambda entry: sp.simplify(
+                sp.expand(entry).subs(
+                    t**4, -1 - s**4
+                )
+            )
+        )
+
+        st.markdown("**Computed Gram matrix**")
+        st.latex(sp.latex(gram_reduced))
+
+        if gram_reduced == TARGET_GRAM:
+            st.success("Symbolic verification successful.")
+        else:
+            st.error("Gram matrix verification failed.")
+    elif quartic_case == "Exceptional twisted: d = eta*pi":
+
+        from quartic import (
+            exceptional_twisted_quartic_basis,
+            exceptional_twisted_quartic_gram,
+            TARGET_GRAM,
+        )
+
+        import sympy as sp
+
+        st.markdown("### Exceptional twisted quartic Witt basis")
+
+        s, t = sp.symbols("s t", nonzero=True)
+        varpi = sp.Symbol("varpi", nonzero=True)
+
+        i = sp.Symbol("i")
+        delta = sp.Symbol("delta")
+
+        st.markdown("**Definition of the quartic extension**")
+
+        st.latex(
+            r"E_1=F(i),\qquad i^2=-1,\qquad "
+            r"K=E_1(\delta)"
+        )
+
+        st.latex(
+            r"\eta=s^2+it^2,\qquad s^4+t^4=-1"
+        )
+
+        st.latex(
+            r"\delta^2=\eta\varpi,\qquad "
+            r"\mu_4=\eta,\qquad \lambda=-1"
+        )
+
+        # Construct the Witt basis
+        basis = exceptional_twisted_quartic_basis(
+            s, t, varpi
+        )
+
+        # Original F-basis of K
+        original_basis = [
+            sp.Integer(1),
+            i,
+            delta,
+            i * delta,
+        ]
+
+        st.markdown(
+            "**Constructed Witt basis in the original basis**"
+        )
+
+                # Display simplified Witt basis
+        st.latex(r"e_1=\left(\frac{(1+i)\delta}{\eta},\,0\right)")
+
+        st.latex(r"e_2=\left(-\frac{1}{s},\,1\right)")
+
+        st.latex(
+            r"f_1=\left(-\frac{(1-i)\delta}{2\varpi\eta},\,0\right)"
+        )
+
+        st.latex(r"f_2=\left(-\frac{1}{2s},\,-\frac12\right)")
+
+        st.latex(
+            r"g_1=\left(\frac{t^2}{s}+is,\,0\right)"
+        )
+
+        # Compute the Gram matrix
+        gram = exceptional_twisted_quartic_gram(
+            s, t, varpi
+        )
+
+        # Apply the relation s^4 + t^4 = -1
+        gram_reduced = gram.applyfunc(
+            lambda entry: sp.simplify(
+                sp.cancel(entry).subs(
+                    t**4, -1 - s**4
+                )
+            )
+        )
+
+        st.markdown("**Computed Gram matrix**")
+        st.latex(sp.latex(gram_reduced))
+
+        if gram_reduced == TARGET_GRAM:
+            st.success("Symbolic verification successful.")
+        else:
+            st.error("Gram matrix verification failed.")

@@ -202,10 +202,57 @@ The interactive application is available through the link at the beginning of th
 - [x] Provide an interactive interface for the first two families.
 - [ ] Add detailed worked examples for both constructions.
 - [ ] Document the mathematical proofs and their relationship to the algorithms.
-- [ ] Extend verification to future quartic constructions.
-
+- [x] Implement symbolic Witt basis constructions for the three quartic cases.
+- [x] Verify their Gram matrices using SymPy.
+- [ ] Integrate the quartic constructions into the interactive application.
+- [ ] Add worked examples and document the mathematical assumptions.
 ## Author
 
+## Quartic Witt Basis Constructions
+
+The module `quartic.py` implements symbolic Witt basis constructions for three families of quartic elliptic tori in the split group SO(5).
+
+### Implemented cases
+
+1. **Pure quartic case:** `d = r*sqrt(alpha)`, with `mu4 = 1`.
+   When `-1` is a square in `F`, the application uses `lambda = alpha`.
+   Otherwise, it uses `lambda = -alpha*r**2`.
+2. **Exceptional unramified case:** `d = eta`, with `mu4 = 1` and `lambda = -1`.
+
+3. **Exceptional twisted case:** `d = eta*pi`, with `mu4 = eta` and `lambda = -1`.
+
+For the exceptional cases, `eta = s**2 + i*t**2`, where `i**2 = -1` and `s**4 + t**4 = -1`.
+
+### Symbolic verification
+
+Each construction produces five vectors in the order `(e1, e2, f1, f2, g1)`.
+
+SymPy computes the associated Gram matrix using the polar form
+
+`B(u,v) = (q(u+v) - q(u) - q(v))/2`.
+
+The target Gram matrix is
+
+```text
+[0 0 1 0 0]
+[0 0 0 1 0]
+[1 0 0 0 0]
+[0 1 0 0 0]
+[0 0 0 0 1]
+```
+
+For the exceptional cases, the final entry simplifies to 1 under the assumption `s**4 + t**4 = -1`.
+
+The symbolic checks verify the constructed bases under their stated assumptions. They do not independently solve norm equations or establish local-field admissibility.
+
+### Running the tests
+
+```bash
+python -m pytest -q
+```
+
+The quartic tests are located in `tests/test_quartic.py`.
+## Author
 **Serine Bairakji**
 
 PhD in Mathematics, University of Ottawa
