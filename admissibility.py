@@ -63,3 +63,30 @@ def exceptional_quartic_norm(s, t):
     """Compute the norm of eta = s**2 + i*t**2, where i**2 = -1."""
     s, t = sp.sympify(s), sp.sympify(t)
     return sp.expand(s**4 + t**4)
+
+def hensel_lift_fourth_root_minus_two(precision):
+    """
+    Find s modulo 3**precision such that
+    s**4 + 2 == 0 modulo 3**precision.
+
+    Start with s = 1 modulo 3.
+    """
+    if precision < 1:
+        raise ValueError("Precision must be positive")
+
+    s = 1
+
+    for n in range(1, precision):
+        modulus = 3**n
+        next_modulus = 3**(n + 1)
+
+        for digit in range(3):
+            candidate = s + digit * modulus
+
+            if (candidate**4 + 2) % next_modulus == 0:
+                s = candidate
+                break
+        else:
+            raise ArithmeticError("Hensel lifting failed")
+
+    return s

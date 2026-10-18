@@ -93,3 +93,19 @@ def test_exceptional_twisted_quartic_admissibility_q3():
     assert hasse_q1 == -1
     assert lambda_symbol == 1
     assert left_side == right_side
+
+def test_hensel_lift_fourth_root_minus_two():
+    from admissibility import hensel_lift_fourth_root_minus_two
+
+    expected = [1, 7, 7, 34]
+
+    for precision, root in enumerate(expected, start=1):
+        result = hensel_lift_fourth_root_minus_two(precision)
+
+        assert result == root
+        assert (result**4 + 2) % (3**precision) == 0
+
+    for precision in range(5, 11):
+        result = hensel_lift_fourth_root_minus_two(precision)
+
+        assert (result**4 + 2) % (3**precision) == 0
