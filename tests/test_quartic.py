@@ -71,3 +71,45 @@ def test_exceptional_twisted_quartic_gram():
     )
 
     assert gram == TARGET_GRAM
+
+
+def test_exceptional_quartic_isotropic_vectors():
+    """Verify the four isotropic vectors in the exceptional quartic basis."""
+    import sympy as sp
+    from quartic import (
+        exceptional_quartic_basis,
+        exceptional_quartic_form,
+    )
+
+    s = sp.Symbol("s", nonzero=True)
+    t = sp.Integer(1)
+
+    basis = exceptional_quartic_basis(s, t)
+
+    for vector in basis[:4]:
+        value = exceptional_quartic_form(vector, s, t)
+        numerator, denominator = sp.fraction(sp.cancel(value))
+
+        assert sp.rem(numerator, s**4 + 2, s) == 0
+        assert sp.rem(denominator, s**4 + 2, s) != 0
+
+
+def test_exceptional_twisted_quartic_isotropic_vectors():
+    """Verify isotropy in the exceptional twisted quartic basis."""
+    from quartic import (
+        exceptional_twisted_quartic_basis,
+        exceptional_twisted_quartic_form,
+    )
+
+    s = sp.Symbol("s", nonzero=True)
+    t = sp.Integer(1)
+    pi = sp.Integer(3)
+
+    basis = exceptional_twisted_quartic_basis(s, t, pi)
+
+    for vector in basis[:4]:
+        value = exceptional_twisted_quartic_form(vector, s, t, pi)
+        numerator, denominator = sp.fraction(sp.cancel(value))
+
+        assert sp.rem(numerator, s**4 + 2, s) == 0
+        assert sp.rem(denominator, s**4 + 2, s) != 0
