@@ -139,3 +139,116 @@ class QuadraticElement:
         return sp.simplify(
             self.a**2 - self.alpha * self.b**2
         )
+def quadratic_residue_multiply(x, y, alpha, p):
+    """
+    Multiply elements in F_p[sqrt(alpha)].
+
+    x = (a, b) represents a + b*sqrt(alpha).
+    """
+    a, b = x
+    c, d = y
+
+    return (
+        (a*c + alpha*b*d) % p,
+        (a*d + b*c) % p,
+    )
+def quadratic_character_f9(x):
+    """
+    Return +1 or -1 according to whether
+    x is a square in F_9 = F_3[i].
+
+    x = (a, b) represents a + b*i.
+    """
+    a, b = x
+    x = (a % 3, b % 3)
+
+    if x == (0, 0):
+        raise ValueError("Quadratic character requires a nonzero element")
+
+    result = (1, 0)
+
+    for _ in range(4):
+        result = quadratic_residue_multiply(
+            result, x, -1, 3
+        )
+
+    if result == (1, 0):
+        return 1
+
+    if result == (2, 0):
+        return -1
+
+    raise ArithmeticError("Unexpected quadratic character value")
+def hilbert_symbol_q3_i(x, y):
+    """
+    Compute the Hilbert symbol (x, y) over Q_3(i),
+    where i**2 = -1.
+
+    Inputs are nonzero QuadraticElement objects
+    with rational coefficients and alpha = -1.
+    """
+
+    if x.alpha != -1 or y.alpha != -1:
+        raise ValueError("This function requires Q_3(i)")
+
+    def valuation_3(a):
+        a = sp.Rational(a)
+
+        if a == 0:
+            return None
+
+        numerator, denominator = a.as_numer_denom()
+        numerator = abs(int(numerator))
+        denominator = int(denominator)
+
+        valuation = 0
+
+        while numerator % 3 == 0:
+            numerator //= 3
+            valuation += 1
+
+        while denominator % 3 == 0:
+            denominator //= 3
+            valuation -= 1
+
+        return valuation
+
+    def residue_mod_3(a):
+        a = sp.Rational(a)
+        numerator, denominator = a.as_numer_denom()
+
+        return (
+            int(numerator) % 3
+            * pow(int(denominator) % 3, -1, 3)
+        ) % 3
+
+    def valuation_and_character(z):
+        a = sp.Rational(z.a)
+        b = sp.Rational(z.b)
+
+        valuations = [
+            v for v in (valuation_3(a), valuation_3(b))
+            if v is not None
+        ]
+
+        if not valuations:
+            raise ValueError("Hilbert symbol requires nonzero elements")
+
+        m = min(valuations)
+
+        scale = sp.Rational(3) ** m
+
+        residue = (
+            residue_mod_3(a / scale),
+            residue_mod_3(b / scale),
+        )
+
+        return m, quadratic_character_f9(residue)
+
+    m, chi_x = valuation_and_character(x)
+    n, chi_y = valuation_and_character(y)
+
+    return (
+        (chi_x if n % 2 else 1)
+        * (chi_y if m % 2 else 1)
+    )

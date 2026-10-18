@@ -144,3 +144,68 @@ def test_quadratic_element_extension_mismatch():
 
     with pytest.raises(ValueError):
         x * y
+
+def test_quadratic_residue_multiplication():
+    from admissibility import quadratic_residue_multiply
+
+    mul = quadratic_residue_multiply
+
+    # In F_9 = F_3[i], where i^2 = -1
+    x = (1, 1)
+    x_squared = mul(x, x, -1, 3)
+    x_fourth = mul(x_squared, x_squared, -1, 3)
+
+    assert x_squared == (0, 2)
+    assert x_fourth == (2, 0)
+
+    # Multiplicative identity
+    assert mul(x, (1, 0), -1, 3) == x
+
+def test_hilbert_symbol_q3_i():
+    """Verify Hilbert symbols over the unramified field Q_3(i)."""
+    from admissibility import (
+        QuadraticElement,
+        hilbert_symbol_q3_i,
+    )
+
+    one = QuadraticElement(1, 0, -1)
+    pi = QuadraticElement(3, 0, -1)
+    eta = QuadraticElement(1, 1, -1)
+
+    assert hilbert_symbol_q3_i(eta, pi) == -1
+    assert hilbert_symbol_q3_i(pi, pi) == 1
+    assert hilbert_symbol_q3_i(one, eta) == 1
+
+    # Symmetry of the Hilbert symbol
+    assert hilbert_symbol_q3_i(pi, eta) == -1
+
+    # The twisted exceptional parameter d = 3*eta
+    d = eta * pi
+    assert hilbert_symbol_q3_i(eta, d) == -1
+def test_exceptional_quartic_extension_hilbert_symbols():
+    """
+    Check the extension-field Hilbert symbols for
+    the two exceptional quartic constructions.
+    """
+    from admissibility import (
+        QuadraticElement,
+        hilbert_symbol_q3_i,
+    )
+
+    # s = 7 approximates a root of s^4 = -2 in Q_3
+    s = 7
+    assert (s**4 + 2) % 27 == 0
+
+    one = QuadraticElement(1, 0, -1)
+    eta = QuadraticElement(s**2, 1, -1)
+    pi = QuadraticElement(3, 0, -1)
+
+    # Case 1: mu = 1, d = eta
+    assert hilbert_symbol_q3_i(one, eta) == 1
+
+    # Case 2: mu = eta, d = 3*eta
+    d_twisted = eta * pi
+    assert hilbert_symbol_q3_i(eta, d_twisted) == -1
+
+    # The norm of eta has the square class of -1 in Q_3
+    assert (-eta.norm()) % 3 == 1
