@@ -90,3 +90,52 @@ def hensel_lift_fourth_root_minus_two(precision):
             raise ArithmeticError("Hensel lifting failed")
 
     return s
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class QuadraticElement:
+    """
+    Represent a + b*sqrt(alpha) in F(sqrt(alpha)).
+    """
+
+    a: object
+    b: object
+    alpha: object
+
+    def __add__(self, other):
+        if self.alpha != other.alpha:
+            raise ValueError("Different quadratic extensions")
+
+        return QuadraticElement(
+            sp.simplify(self.a + other.a),
+            sp.simplify(self.b + other.b),
+            self.alpha,
+        )
+
+    def __mul__(self, other):
+        if self.alpha != other.alpha:
+            raise ValueError("Different quadratic extensions")
+
+        return QuadraticElement(
+            sp.simplify(
+                self.a * other.a
+                + self.alpha * self.b * other.b
+            ),
+            sp.simplify(
+                self.a * other.b + self.b * other.a
+            ),
+            self.alpha,
+        )
+
+    def conjugate(self):
+        return QuadraticElement(
+            self.a,
+            -self.b,
+            self.alpha,
+        )
+
+    def norm(self):
+        return sp.simplify(
+            self.a**2 - self.alpha * self.b**2
+        )
