@@ -348,7 +348,7 @@ $$
 Reducing its entries under the defining relation $s^4+2=0$ gives
 
 $$
-\operatorname{Gram}(e_1,e_2,f_1,f_2,g_1)=
+\mathrm{Gram}(e_1,e_2,f_1,f_2,g_1)=
 \begin{pmatrix}
 0&0&1&0&0\\
 0&0&0&1&0\\
