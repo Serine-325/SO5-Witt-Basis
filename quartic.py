@@ -7,7 +7,7 @@ Based on Section 4.3 of our mathematical paper.
 Cases:
     1. Pure quartic extensions
     2. Exceptional unramified case: d = eta
-    3. Exceptional unramified case: d = eta * pi
+    3. Exceptional twisted case: d = eta * pi
 
 Target Gram matrix:
     [0, 0, 1, 0, 0]
