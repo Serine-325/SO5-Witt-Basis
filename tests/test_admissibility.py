@@ -109,3 +109,38 @@ def test_hensel_lift_fourth_root_minus_two():
         result = hensel_lift_fourth_root_minus_two(precision)
 
         assert (result**4 + 2) % (3**precision) == 0
+
+def test_quadratic_element_arithmetic():
+    from admissibility import QuadraticElement
+
+    x = QuadraticElement(1, 2, 3)
+    y = QuadraticElement(2, 1, 3)
+
+    # Addition
+    assert x + y == QuadraticElement(3, 3, 3)
+
+    # Multiplication
+    assert x * y == QuadraticElement(8, 5, 3)
+
+    # Conjugation
+    assert x.conjugate() == QuadraticElement(1, -2, 3)
+
+    # Norm
+    assert x.norm() == -11
+
+    # Verify x * conjugate(x) = N(x)
+    assert x * x.conjugate() == QuadraticElement(-11, 0, 3)
+
+
+def test_quadratic_element_extension_mismatch():
+    import pytest
+    from admissibility import QuadraticElement
+
+    x = QuadraticElement(1, 2, 3)
+    y = QuadraticElement(1, 2, 5)
+
+    with pytest.raises(ValueError):
+        x + y
+
+    with pytest.raises(ValueError):
+        x * y
