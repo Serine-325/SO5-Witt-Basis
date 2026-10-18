@@ -209,3 +209,54 @@ def test_exceptional_quartic_extension_hilbert_symbols():
 
     # The norm of eta has the square class of -1 in Q_3
     assert (-eta.norm()) % 3 == 1
+def test_exceptional_quartic_full_admissibility():
+    """
+    Verify both admissibility conditions in Theorem 3.6
+    for the two exceptional quartic cases over Q_3.
+    """
+    from admissibility import (
+        QuadraticElement,
+        hilbert_symbol_qp,
+        hilbert_symbol_q3_i,
+    )
+
+    s = 7  # 3-adic approximation: s^4 = -2 mod 27
+    assert (s**4 + 2) % 27 == 0
+
+    alpha = -1
+    lam = -1
+
+    one = QuadraticElement(1, 0, alpha)
+    eta = QuadraticElement(s**2, 1, alpha)
+
+    cases = [
+        ("unramified", one, 1, 1),
+        ("twisted", eta, 3, -1),
+    ]
+
+    for name, mu, scale, expected in cases:
+        d = eta * QuadraticElement(scale, 0, alpha)
+
+        a = scale * s**2
+        b = scale
+        D = a**2 - alpha * b**2
+
+        # Condition 1: lambda and D have the same
+        # square class in Q_3.
+        assert (-D) % (scale**2) == 0
+        assert ((-D) // (scale**2)) % 3 == 1
+
+        # Condition 2: extension-field Hilbert symbol
+        lhs = hilbert_symbol_q3_i(mu, d)
+
+        # Hasse invariant of q_1
+        epsilon = (
+            hilbert_symbol_qp(alpha, alpha * D, 3)
+            * hilbert_symbol_qp(-a, -alpha * D, 3)
+        )
+
+        rhs = epsilon * hilbert_symbol_qp(lam, -1, 3)
+
+        assert lhs == expected, name
+        assert rhs == expected, name
+        assert lhs == rhs, name
