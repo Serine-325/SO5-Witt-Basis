@@ -101,17 +101,28 @@ with tab_biquad:
         b_choices = [v for v in CLASSES if v != a_class]
         b_class = st.selectbox("Choose β (different square class)", b_choices, key="biq_beta")
 
-    options = {
-        "canonical": "Canonical split representative: μ = √α, t = 1",
-        "witness": "Supply a norm witness t; compute μ = √α / N(t)",
-    }
-    if not square and a_class == "epsilon":
-        options["special"] = "Unramified case, −1 nonsquare: μ = 1 (direct basis)"
-    mode = st.radio(
-        "Construction", list(options), format_func=lambda key: options[key],
-        key="biq_mode",
+    exceptional = not square and a_class == "epsilon"
+
+    if exceptional:
+        mu_options = {
+            "one": "mu = 1",
+            "eta": "mu = eta = s0^2 + i*t0^2",
+        }
+    else:
+        mu_options = {
+            "sqrt_alpha": "mu = sqrt(alpha)",
+            "one": "mu = 1",
+        }
+
+    mu_choice = st.radio(
+        "Choose mu",
+        list(mu_options),
+        format_func=lambda key: mu_options[key],
+        key="biq_mu_choice",
     )
 
+    is_split = mu_choice == ("one" if exceptional else "sqrt_alpha")
+    mode = "special" if exceptional else "canonical"
     if mode == "witness":
         st.markdown(
             "Choose the four **F-coordinates** of a nonzero witness "
@@ -140,6 +151,10 @@ with tab_biquad:
 
     if st.button("Construct and verify biquadratic Witt basis", type="primary"):
         try:
+            if not is_split:
+                raise ValueError(
+                    "The selected mu gives the non-split quadratic space. Please choose the other mu."
+                )
             result = construct_biquadratic(
                 minus_one_square=square,
                 alpha_name=a_class,
@@ -151,13 +166,13 @@ with tab_biquad:
             )
             st.session_state["biq_result"] = result
             st.session_state["biq_settings"] = (
-                square, a_class, b_class, mode, t_coordinates, rho, order_pairs,
+                square, a_class, b_class, mu_choice, mode, t_coordinates, rho, order_pairs,
             )
         except (ValueError, ArithmeticError) as error:
             st.session_state.pop("biq_result", None)
             st.error(str(error))
 
-    current_settings = (square, a_class, b_class, mode, t_coordinates, rho, order_pairs)
+    current_settings = (square, a_class, b_class, mu_choice, mode, t_coordinates, rho, order_pairs)
     if st.session_state.get("biq_settings") == current_settings and "biq_result" in st.session_state:
         result = st.session_state["biq_result"]
         st.divider()
