@@ -52,7 +52,8 @@ def _parse(expr: str, D: sp.Expr | None, epsilon: sp.Expr,
     names = dict(names or {})
     names.update({'epsilon': epsilon, 'pi': PI, 's0': S0, 't0': T0,
                   's': S, 't': T})
-
+    if epsilon == -1:
+        names["delta"] = sp.Integer(1)
     def scalar(v):
         return v if D is None else (v, sp.S.Zero)
 
