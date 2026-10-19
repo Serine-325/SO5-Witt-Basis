@@ -708,13 +708,15 @@ def construct_witt_basis():
 
                     if alpha == "pi":
 
-                        print("e1 = (1, 0, 1)")
+                        print("Choose delta in F such that delta^2 = -epsilon.")
 
-                        print("f1 = (1/2, 0, -1/2)")
+                        print("e1 = (1, 0, 1/delta)")
 
-                        print("e2 = (sqrt(pi), sqrt(epsilon*pi), 0)")
+                        print("f1 = (1/2, 0, -1/(2*delta))")
+                        
+                        print("e2 = (sqrt(pi), sqrt(epsilon*pi)/delta, 0)")
 
-                        print("f2 = (-1/(2*sqrt(pi)), sqrt(epsilon*pi)/(2*pi), 0)")
+                        print("f2 = (-1/(2*sqrt(pi)), sqrt(epsilon*pi)/(2*pi*delta), 0)")
 
                         print("g1 = (0, 1, 0)")
 
@@ -722,13 +724,15 @@ def construct_witt_basis():
 
                     elif alpha == "epsilon*pi":
 
-                        print("e1 = (1, 0, 1)")
+                        print("Choose delta in F such that delta^2 = -epsilon.")
 
-                        print("f1 = (1/2, 0, -1/2)")
+                        print("e1 = (1, 0, 1/delta)")
 
-                        print("e2 = (sqrt(epsilon*pi), sqrt(pi), 0)")
+                        print("f1 = (1/2, 0, -1/(2*delta))")
 
-                        print("f2 = (-1/(2*sqrt(epsilon*pi)), sqrt(pi)/(2*(epsilon*pi)), 0)")
+                        print("e2 = (sqrt(epsilon*pi), delta*sqrt(pi), 0)")
+
+                        print("f2 = (-1/(2*sqrt(epsilon*pi)), -sqrt(pi)/(2*pi*delta), 0)")
 
                         print("g1 = (0, 1, 0)")
 
@@ -913,33 +917,34 @@ def construct_witt_basis():
                     print(f"g1 = (0, {r}, 0)")
             else:
                 print("Unsupported sign combination for Proposition 4.8")
+if __name__ == "__main__":                
 
-while True:
+    while True:
 
-    construct_witt_basis()
-
-
-
-    print()
-
-    print("----------------------------------------------")
-
-    print("Would you like to construct another Witt basis?")
-
-    print("1. Yes")
-
-    print("2. Exit")
+        construct_witt_basis()
 
 
-
-    choice = input("Your choice: ")
-
-
-
-    if choice == "2":
 
         print()
 
-        print("Program ended.")
+        print("----------------------------------------------")
 
-        break
+        print("Would you like to construct another Witt basis?")
+
+        print("1. Yes")
+
+        print("2. Exit")
+
+
+
+        choice = input("Your choice: ")
+
+
+
+        if choice == "2":
+
+            print()
+
+            print("Program ended.")
+
+            break
