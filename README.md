@@ -2,9 +2,11 @@
 
 This Python research project constructs and verifies **explicit Witt bases** for quadratic spaces associated with elliptic maximal tori in the split group $\mathrm{SO}(5)$. It is based on doctoral research in the representation theory of $p$-adic groups at the University of Ottawa.
 
+For each supported split quadratic space, the program explicitly constructs a Witt basis $(e_1,e_2,f_1,f_2,g_1)$ and verifies its Gram matrix symbolically. The constructions use the algebraic structure of the corresponding field extensions, including norm equations and trace forms. This connects theoretical results from the doctoral research with executable, mathematically verified Python algorithms.
+
 **[Launch the interactive Witt Basis Constructor](https://so5-witt-basis.onrender.com/)** — explore parameters, inspect the basis vectors, and check their Gram matrices in a web interface. No local installation or GitHub account is needed to use the app.
 
-**Implemented:** constructions for sums of two quadratic extensions, biquadratic extensions, and three quartic cases. **Verification:** symbolic Gram-matrix checks in SymPy, arithmetic and admissibility tests for supported local-field settings, and automated tests using pytest and GitHub Actions. **Reported test status (October 18, 2026): 188 passing tests.**
+**Implemented:** constructions for sums of two quadratic extensions, biquadratic extensions, and three quartic cases. **Verification:** symbolic Gram-matrix checks in SymPy, arithmetic and admissibility tests for supported local-field settings, and automated tests using pytest and GitHub Actions. **Test status (October 19, 2026): 188 tests passed.**
 
 **Research boundary:** the Witt basis stage is implemented; the algorithms to locate corresponding points in the Bruhat–Tits building are planned work. The arithmetic routines currently cover specific local fields and examples, not all non-archimedean local fields.
 
@@ -120,45 +122,102 @@ The algorithm:
 
 The implementation includes automated tests for the biquadratic construction.
 
-### 3. Quartic extensions
+## 3. Quartic extensions
 
-The module `quartic.py` implements symbolic Witt basis constructions for three families of quartic elliptic tori in the split group SO(5).
+The module `quartic.py` implements explicit Witt basis constructions for three families of quartic extensions associated with elliptic maximal tori in split $\mathrm{SO}(5)$.
 
-#### Implemented cases
+### Mathematical setting
 
-1. **Pure quartic case:** `d = r*sqrt(alpha)`, with `mu4 = 1`.
+Let $F$ be a non-archimedean local field of odd residual characteristic, and let $\alpha\in F^\times\setminus F^{\times 2}$. Set
 
-   When `-1` is a square in `F`, the application uses `lambda = alpha`.
+$E_1=F(\sqrt{\alpha}).$
 
-   Otherwise, it uses `lambda = -alpha*r**2`.
+The quartic extensions considered here have the form
 
-2. **Exceptional unramified case:** `d = eta`, with `mu4 = 1` and `lambda = -1`.
+$E=E_1(\sqrt{d})=F(\sqrt{\alpha},\sqrt{d}),$
 
-3. **Exceptional twisted case:** `d = eta*pi`, with `mu4 = eta` and `lambda = -1`.
+where $d\in E_1^\times$ is chosen so that $d\notin E_1^{\times 2}$.
 
-For the exceptional cases, `eta = s**2 + i*t**2`, where `i**2 = -1` and `s**4 + t**4 = -1`.
+Thus, $d$ is the element of the quadratic field $E_1$ whose square root generates the quartic extension $E/E_1$.
 
-#### Symbolic verification
+### Implemented cases
 
-Each construction produces five vectors in the order `(e1, e2, f1, f2, g1)`.
+1. **Pure quartic case**
 
-SymPy computes the associated Gram matrix using the polar form
+   Take $d=r\sqrt{\alpha}$, where $r\in F^\times$ is a nonzero scalar. If $\theta=\sqrt{d}$, then
 
-`B(u,v) = (q(u+v) - q(u) - q(v))/2`.
+   $\theta^4=\alpha r^2,\qquad E=F(\theta).$
+
+   The program uses $\mu_4=1$, with the following choices of $\lambda$:
+
+   - If $-1\in F^{\times 2}$, then $\lambda=\alpha$.
+   - If $-1\notin F^{\times 2}$, then $\lambda=-\alpha r^2$.
+
+2. **Exceptional unramified case**
+
+   Suppose $-1\notin F^{\times 2}$ and $\alpha=-1$. Write $E_1=F(i)$, where $i^2=-1$.
+
+   Choose $s_0,t_0\in F$ satisfying
+
+   $s_0^4+t_0^4=-1,$
+
+   and define
+
+   $\eta=s_0^2+it_0^2\in E_1.$
+
+   Then $N_{E_1/F}(\eta)=s_0^4+t_0^4=-1$.
+
+   For this case, take
+
+   $d=\eta,\qquad E=E_1(\sqrt{\eta}),$
+
+   with $\mu_4=1$ and $\lambda=-1$.
+
+3. **Exceptional twisted case**
+
+   Retain the same field $E_1=F(i)$ and the same element $\eta=s_0^2+it_0^2$, with $s_0^4+t_0^4=-1$. Let $\varpi$ be a fixed uniformizer of $F$.
+
+   Take
+
+   $d=\eta\varpi,\qquad E=E_1(\sqrt{\eta\varpi}),$
+
+   with $\mu_4=\eta$ and $\lambda=-1$.
+
+In all three cases, the program constructs an explicit Witt basis and verifies its Gram matrix symbolically.
+
+
+**Symbolic verification**
+
+Each construction produces five vectors in the order $(e_1,e_2,f_1,f_2,g_1)$.
+
+SymPy computes the Gram matrix using the symmetric bilinear form
+
+$$
+B(u,v)=\frac{q(u+v)-q(u)-q(v)}{2}.
+$$
 
 The target Gram matrix is
 
-```text
-[0 0 1 0 0]
-[0 0 0 1 0]
-[1 0 0 0 0]
-[0 1 0 0 0]
-[0 0 0 0 1]
-```
+$$
+\operatorname{Gram}(e_1,e_2,f_1,f_2,g_1)=
+\begin{pmatrix}
+0&0&1&0&0\\
+0&0&0&1&0\\
+1&0&0&0&0\\
+0&1&0&0&0\\
+0&0&0&0&1
+\end{pmatrix}.
+$$
 
-For the exceptional cases, the final entry simplifies to 1 under the assumption `s**4 + t**4 = -1`.
+For the exceptional quartic cases, the symbolic identities are simplified using
 
-The symbolic checks verify the constructed bases under their stated assumptions. They do not independently solve norm equations or establish local-field admissibility.
+$$
+s_0^4+t_0^4=-1.
+$$
+
+In the worked examples over $\mathbb{Q}_3$, we specialize to $t_0=1$ and $s_0^4=-2$.
+
+The symbolic checks verify the algebraic identities of the constructed Witt bases. The existence of the required local-field parameters is established separately by the mathematical norm conditions.
 
 #### Running the tests
 
@@ -295,25 +354,39 @@ $$
 E_1=F(i),\qquad i^2=-1.
 $$
 
-Choose $t=1$ and let $s\in\mathbb Q_3$ satisfy
+
+Choose $s_0,t_0\in F$ satisfying
 
 $$
-s^4=-2,\qquad s\equiv1\pmod3.
+s_0^4+t_0^4=-1,
+$$
+
+and define
+
+$$
+\eta=s_0^2+it_0^2\in E_1.
+$$
+
+For this worked example, take $t_0=1$ and choose $s_0\in\mathbb{Q}_3$ satisfying
+
+$$
+s_0^4=-2,\qquad s_0\equiv1\pmod3.
 $$
 
 Such an element exists by Hensel's lemma, applied to $X^4+2$ at $X=1$.
 
-Define
+Set
 
 $$
-\eta=s^2+i,\qquad K=E_1(\sqrt{\eta}).
+K=E_1(\sqrt{\eta}).
 $$
 
 Then
 
 $$
-N_{E_1/F}(\eta)=s^4+1=-1.
+N_{E_1/F}(\eta)=s_0^4+t_0^4=-1.
 $$
+
 
 Consequently, $\eta$ is not a square in $E_1$, and $K/F$ is a cyclic quartic extension with unique quadratic subfield $E_1$.
 
@@ -330,10 +403,10 @@ Using the coordinate order $(x_0,x_1,x_2,x_3,z)$, the Python implementation prod
 $$
 \begin{aligned}
 e_1&=(1,1,0,0,0),\\
-e_2&=(0,0,0,1/s,1),\\
+e_2&=(0,0,0,1/s_0,1),\\
 f_1&=(1/2,-1/2,0,0,0),\\
-f_2&=(0,0,0,1/(2s),-1/2),\\
-g_1&=(0,0,s,-1/s,0).
+f_2&=(0,0,0,1/(2s_0),-1/2),\\
+g_1&=(0,0,s_0,-1/s_0,0).
 \end{aligned}
 $$
 
@@ -345,7 +418,7 @@ $$
 B(u,v)=\frac{q(u+v)-q(u)-q(v)}{2}.
 $$
 
-Reducing its entries under the defining relation $s^4+2=0$ gives
+Reducing its entries under the defining relation $s_0^4+2=0$ gives
 
 $$
 \mathrm{Gram}(e_1,e_2,f_1,f_2,g_1)=
@@ -372,7 +445,7 @@ print("Gram matrix:")
 print(gram)
 ```
 
-The entries of the Gram matrix are to be simplified using $s^4=-2$.
+The entries of the Gram matrix are to be simplified using $s_0^4=-2$.
 
 This example demonstrates the explicit Witt basis construction for an admissible exceptional unramified quartic torus. The symbolic verification establishes the required Gram identities, while the existence of the local-field parameter $s$ follows independently from Hensel's lemma.
 
@@ -384,13 +457,13 @@ $$
 E_1=F(i),\qquad i^2=-1.
 $$
 
-Let $s\in\mathbb Q_3$ satisfy $s^4=-2$ and $s\equiv1\pmod3$, and set
+Let $s_0\in\mathbb Q_3$ satisfy $s_0^4=-2$ and $s_0\equiv1\pmod3$, and set
 
 $$
-t=1,\qquad \eta=s^2+i,\qquad \varpi=3.
+t=1,\qquad \eta=s_0^2+i,\qquad \varpi=3.
 $$
 
-The existence of $s$ follows from Hensel's lemma, as established in the preceding example.
+The existence of $s_0$ follows from Hensel's lemma, as established in the preceding example.
 
 For the exceptional twisted construction, choose
 
@@ -401,7 +474,7 @@ $$
 Since
 
 $$
-N_{E_1/F}(d)=9(s^4+1)=-9,
+N_{E_1/F}(d)=9(s_0^4+1)=-9,
 $$
 
 the norm has nonsquare class $-1$ in $F$. Thus $K=E_1(\sqrt{3\eta})$ is a cyclic quartic extension with unique quadratic subfield $E_1$.
@@ -412,11 +485,11 @@ In the coordinate order $(x_0,x_1,x_2,x_3,z)$, the construction produces the fol
 
 $$
 \begin{aligned}
-e_1&=(0,0,-s^2-1,1-s^2,0),\\
-e_2&=(-1/s,0,0,0,1),\\
-f_1&=(0,0,(s^2-1)/6,-(s^2+1)/6,0),\\
-f_2&=(-1/(2s),0,0,0,-1/2),\\
-g_1&=(1/s,s,0,0,0).
+e_1&=(0,0,-s_0^2-1,1-s_0^2,0),\\
+e_2&=(-1/s_0,0,0,0,1),\\
+f_1&=(0,0,(s_0^2-1)/6,-(s_0^2+1)/6,0),\\
+f_2&=(-1/(2s_0),0,0,0,-1/2),\\
+g_1&=(1/s_0,s_0,0,0,0).
 \end{aligned}
 $$
 
@@ -428,7 +501,7 @@ $$
 B(u,v)=\frac{q(u+v)-q(u)-q(v)}{2}.
 $$
 
-Reducing the entries under the relation $s^4+2=0$ yields
+Reducing the entries under the relation $s_0^4+2=0$ yields
 
 $$
 \mathrm{Gram}(e_1,e_2,f_1,f_2,g_1)=
