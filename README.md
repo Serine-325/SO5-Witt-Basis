@@ -76,6 +76,66 @@ The implementation distinguishes two cases:
 
 The original implementation has been tested on 36 admissible parameter configurations.
 
+
+#### Worked example: Equal quadratic extensions over $\mathbb{Q}_3$
+
+Let $F=\mathbb{Q}_3$, $\alpha=\beta=-1$, and $E=F(A)$, where $A^2=-1$. Consider
+
+$$
+V=E\oplus E\oplus F
+$$
+
+with parameters $\mu_1=1$, $\mu_2=-\frac12$, and $\lambda=1$.
+
+The quadratic form is
+
+$$
+q(x,y,z)=N_{E/F}(x)-\frac12N_{E/F}(y)+z^2.
+$$
+
+Choose $u=1+A$. Since
+
+$$
+N_{E/F}(u)=(1+A)(1-A)=2=-\frac{\mu_1}{\mu_2},
+$$
+
+the norm condition required for the construction is satisfied.
+
+An explicit Witt basis, written in $E\oplus E\oplus F$, is
+
+$$
+\begin{aligned}
+e_1&=(1,u,0),&
+e_2&=(A,Au,0),\\
+f_1&=\left(\frac12,-\frac u2,0\right),&
+f_2&=\left(\frac A2,-\frac{Au}{2},0\right),\\
+g_1&=(0,0,1).
+\end{aligned}
+$$
+
+Direct calculation verifies that all four hyperbolic vectors are isotropic, $(e_i,f_j)=\delta_{ij}$, and all other cross-pairings vanish. Moreover, $(g_1,g_1)=1$.
+
+In the order $(e_1,e_2,f_1,f_2,g_1)$, the Gram matrix is
+
+$$
+\begin{pmatrix}
+0&0&1&0&0\\
+0&0&0&1&0\\
+1&0&0&0&0\\
+0&1&0&0&0\\
+0&0&0&0&1
+\end{pmatrix}.
+$$
+
+Therefore,
+
+$$
+q\simeq 2\mathbb{H}\oplus\langle1\rangle.
+$$
+
+The construction and Gram-matrix identities are verified in [examples/sum_quadratics_equal_extensions.py](examples/sum_quadratics_equal_extensions.py).
+
+
 ### 2. Biquadratic extensions
 
 **Python file:** `biquadratic.py`
@@ -120,7 +180,44 @@ The algorithm:
 
 5. Performs exact symbolic verification of the resulting Witt basis.
 
-The implementation includes automated tests for the biquadratic construction.
+
+#### Worked example over $\mathbb{Q}_3$
+
+Let $F=\mathbb{Q}_3$ and $K=F(A,B)$, where $A^2=-1$ and $B^2=3$. Take $E_1=F(A)$, $\mu=1$, and $\lambda=1$.
+
+Writing $x=a+bA+(c+dA)B$, the quadratic form becomes
+
+$$
+q_{1,1}(x,z)=a^2-b^2-3c^2+3d^2+z^2.
+$$
+
+An explicit Witt basis, written in $K\oplus F$, is
+
+$$
+\begin{aligned}
+e_1&=(B(A+1),0),&
+e_2&=(A+1,0),\\
+f_1&=\left(\frac{B(A-1)}6,0\right),&
+f_2&=\left(\frac{1-A}{2},0\right),\\
+g_1&=(0,1).
+\end{aligned}
+$$
+
+Direct calculation gives $(e_i,f_j)=\delta_{ij}$, with all other pairings between the hyperbolic vectors equal to zero and $(g_1,g_1)=1$. Thus
+
+$$
+q_{1,1}\simeq 2\mathbb{H}\oplus\langle1\rangle.
+$$
+
+For the norm-class condition, $-2$ is a square in $\mathbb{Q}_3$. Choose $t\in F$ with $t^2=-2$. Then $v=(1-A)/t\in E_1$ satisfies
+
+$$
+N_{K/E_1}(v)=v^2=\frac{(1-A)^2}{-2}=A.
+$$
+
+Hence $A\in N_{K/E_1}(K^\times)$, so $[A]=[1]$ in $E_1^\times/N_{K/E_1}(K^\times)$. Therefore $\mu=1$ is the representative corresponding to the split quadratic space in this example.
+
+The Witt basis and norm identity are verified in [examples/biquadratic_canonical.py](examples/biquadratic_canonical.py).
 
 ## 3. Quartic extensions
 
@@ -585,8 +682,13 @@ The interactive application is available through the link at the beginning of th
 
 - [x] Provide an interactive interface for all three implemented families.
 
-- [ ] Add detailed worked examples for the two-quadratic and biquadratic constructions.
+- [ ] Complete worked examples for sums of two quadratic extensions.
+  The [equal-extension example](examples/sum_quadratics_equal_extensions.py)
+  is verified; the distinct-extension case remains to be added.
 
+- [x] Add a verified [biquadratic worked example](examples/biquadratic_canonical.py)
+  over Q_3, with alpha = -1, beta = 3, mu = lambda = 1,
+  including the norm-coset calculation and Witt basis verification.
 - [ ] Document the mathematical proofs and their relationship to the algorithms.
 
 - [x] Implement symbolic Witt basis constructions for the three quartic cases.
