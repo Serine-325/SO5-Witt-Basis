@@ -136,6 +136,43 @@ $$
 The construction and Gram-matrix identities are verified in [examples/sum_quadratics_equal_extensions.py](examples/sum_quadratics_equal_extensions.py).
 
 
+#### Worked example: Distinct quadratic extensions over $\mathbb{Q}_3$
+
+Let $F=\mathbb{Q}_3$, $\alpha=3$, and $\beta=-3$. The extensions $E_1=F(A)$ and $E_2=F(B)$, with $A^2=3$ and $B^2=-3$, are distinct because $-1$ is not a square in $F$.
+
+Take $\mu_1=\mu_2=1$ and $\lambda=-1$. The quadratic form on $E_1\oplus E_2\oplus F$ is
+
+$$
+q(x,y,z)=N_{E_1/F}(x)+N_{E_2/F}(y)-z^2.
+$$
+
+Writing $x=a+bA$ and $y=c+dB$, we have
+
+$$
+q(x,y,z)=a^2-3b^2+c^2+3d^2-z^2.
+$$
+
+An explicit Witt basis is
+
+$$
+\begin{aligned}
+e_1&=(1,0,1),& e_2&=(A,B,0),\\
+f_1&=\left(\frac12,0,-\frac12\right),&
+f_2&=\left(-\frac A6,\frac B6,0\right),\\
+g_1&=(0,1,0).
+\end{aligned}
+$$
+
+The norm witnesses are $N_{E_1/F}(1)=N_{E_2/F}(1)=1$, and the discriminant condition is satisfied since $\lambda/(\alpha\beta)=1/9$ is a square in $F$.
+
+Direct computation verifies that $(e_i,f_j)=\delta_{ij}$, all other pairings between the hyperbolic vectors vanish, and $(g_1,g_1)=1$. Thus
+
+$$
+q\simeq 2\mathbb{H}\oplus\langle1\rangle.
+$$
+
+The construction and Gram-matrix identities are verified in [examples/sum_quadratics_distinct_extensions.py](examples/sum_quadratics_distinct_extensions.py).
+
 ### 2. Biquadratic extensions
 
 **Python file:** `biquadratic.py`
@@ -682,13 +719,13 @@ The interactive application is available through the link at the beginning of th
 
 - [x] Provide an interactive interface for all three implemented families.
 
-- [ ] Complete worked examples for sums of two quadratic extensions.
-  The [equal-extension example](examples/sum_quadratics_equal_extensions.py)
-  is verified; the distinct-extension case remains to be added.
 
-- [x] Add a verified [biquadratic worked example](examples/biquadratic_canonical.py)
-  over Q_3, with alpha = -1, beta = 3, mu = lambda = 1,
-  including the norm-coset calculation and Witt basis verification.
+- [x] Add verified worked examples for both [equal quadratic extensions](examples/sum_quadratics_equal_extensions.py) and [distinct quadratic extensions](examples/sum_quadratics_distinct_extensions.py), including explicit Witt bases and Gram-matrix verification.
+
+- [x] Add automated tests for all three worked examples in [tests/test_worked_examples.py](tests/test_worked_examples.py).
+
+- [x] Add a verified [biquadratic worked example](examples/biquadratic_canonical.py) over $\mathbb{Q}_3$, with $\alpha=-1$, $\beta=3$, and $\mu=\lambda=1$, including the norm-coset calculation and Witt basis verification.
+
 - [ ] Document the mathematical proofs and their relationship to the algorithms.
 
 - [x] Implement symbolic Witt basis constructions for the three quartic cases.
