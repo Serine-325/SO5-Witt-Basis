@@ -743,3 +743,5 @@ The interactive application is available through the link at the beginning of th
 PhD in Mathematics, University of Ottawa
 
 Research interests: representation theory of p-adic groups, algebraic groups, elliptic tori, and Bruhat–Tits buildings.
+
+**Software development and research**: This repository, including the Python implementations, symbolic verification, automated tests, and interactive Streamlit application, was developed by Serine Bairakji. The mathematical research underlying these constructions is connected to her PhD work under the supervision of Professor Monica Nevins and their ongoing joint research.
