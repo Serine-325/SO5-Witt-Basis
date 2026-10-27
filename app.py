@@ -4,7 +4,7 @@ import sympy as sp
 from verification_panel import render_sum_verification
 from web_runner import CLASSES, MU_OPTIONS, run_constructor, valid_parameters
 from biquadratic import construct_biquadratic
-
+from quartic_mu4 import mu4_options_for_case, is_admissible_mu4
 st.set_page_config(
     page_title="SO(5) | Explicit Witt Basis Constructor",
     page_icon="📐",
@@ -369,12 +369,7 @@ with tab_quartic:
 
         r_value = d_coefficients[d_choice]
  
-    if quartic_case == "Exceptional twisted: d = eta*pi":
-        mu4_options = ["eta", "1"]
-    elif subfield in ["F(sqrt(epsilon))", "F(sqrt(-1))"]:
-        mu4_options = ["1", "varpi"]
-    else:
-        mu4_options = ["1", "epsilon"]
+        mu4_options = mu4_options_for_case(quartic_case, subfield)
 
     mu4_choice = st.radio(
         "Choose the quartic coefficient μ₄",
@@ -389,7 +384,7 @@ with tab_quartic:
         key=f"quartic_mu4_{minus_one_square}_{subfield}_{d_choice}",
     )
 
-    if mu4_choice != mu4_options[0]:
+    if not is_admissible_mu4(quartic_case, subfield, mu4_choice):
         st.error(
             "Rejected: the selected μ₄ belongs to the non-admissible "
             "norm class and does not give split SO(5)."
