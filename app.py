@@ -369,7 +369,7 @@ with tab_quartic:
 
         r_value = d_coefficients[d_choice]
  
-        mu4_options = mu4_options_for_case(quartic_case, subfield)
+    mu4_options = mu4_options_for_case(quartic_case, subfield)
 
     mu4_choice = st.radio(
         "Choose the quartic coefficient μ₄",
