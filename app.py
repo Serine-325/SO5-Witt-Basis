@@ -1,4 +1,4 @@
-"""Streamlit interface for both established SO(5) Witt basis families."""
+"""Streamlit interface for the three SO(5) Witt basis families."""
 import streamlit as st
 import sympy as sp
 from verification_panel import render_sum_verification
@@ -12,11 +12,39 @@ st.set_page_config(
 )
 
 st.title("Explicit Witt Bases for Elliptic Tori in Split SO(5)")
-st.caption("Research software · Two quadratic extensions and biquadratic extensions")
+st.caption("Research software · Two quadratic extensions, biquadratic extensions, and quartic extensions")
 st.markdown(
-    "Construct Witt bases from elliptic torus parameters and inspect the "
-    "pairing identities. The biquadratic module performs exact symbolic "
-    "verification of the Gram matrix."
+    "Construct explicit Witt bases from elliptic torus parameters and "
+    "verify the resulting Gram matrices symbolically."
+)
+st.markdown("#### Mathematical setting and assumptions")
+st.markdown(
+    r"Let $F$ be a non-archimedean local field of **odd residue characteristic** "
+    r"$p\neq 2$, with ring of integers $\mathcal O_F$ and residue field of "
+    r"cardinality $q$. Let $\varpi$ be a uniformizer and "
+    r"$\varepsilon\in\mathcal O_F^\times$ a nonsquare unit. Then "
+    r"$F^\times/F^{\times 2}=\{1,\varepsilon,\varpi,\varepsilon\varpi\}$. "
+    r"In particular, the nontrivial quadratic extensions of $F$ are "
+    r"$E_\gamma=F(\sqrt{\gamma})$, for "
+    r"$\gamma\in\{\varepsilon,\varpi,\varepsilon\varpi\}$."
+)
+st.markdown(
+    r"We require the preserved five-dimensional quadratic space to be **split**: "
+    r"$q\simeq 2\mathbb H\oplus\langle1\rangle$, where $\mathbb H$ is a "
+    r"hyperbolic plane. The output is a Witt basis "
+    r"$\{e_1,e_2,f_1,f_2,g_1\}$ with "
+    r"$q(e_i)=q(f_i)=0$, $(e_i,f_j)=\delta_{ij}$, "
+    r"$(g_1,g_1)=1$, and all other pairings zero."
+)
+st.markdown(
+    r"**Algebra families.** In the framework of **Morris's bijection**, "
+    r"the app treats three types of algebra data for elliptic maximal tori: "
+    r"$E_\alpha\oplus E_\beta\oplus F$ (two quadratic extensions), "
+    r"$K\oplus F$ with $K/F$ biquadratic, and $K\oplus F$ with $K/F$ "
+    r"quartic having a unique quadratic subfield. The chosen parameters "
+    r"must satisfy the corresponding norm and Hilbert-symbol admissibility "
+    r"conditions. Each tab states its conventions and displays the "
+    r"available symbolic verification."
 )
 
 tab_sum, tab_biquad, tab_quartic = st.tabs([
@@ -29,6 +57,18 @@ with tab_sum:
     st.subheader("Sums of two quadratic extensions")
     st.latex(r"V=F(\sqrt{\alpha})\oplus F(\sqrt{\beta})\oplus F")
     st.latex(r"q(x,y,z)=\mu_1N_{\alpha}(x)+\mu_2N_{\beta}(y)+\lambda z^2")
+    st.markdown(
+        r"Here $E_\gamma=F(\sqrt{\gamma})$, with $x\in E_\alpha$, "
+        r"$y\in E_\beta$, and $z\in F$. The norm "
+        r"$N_\gamma=N_{E_\gamma/F}$ is the field norm; for example, "
+        r"$N_\gamma(a+b\sqrt{\gamma})=a^2-\gamma b^2$. The parameters "
+        r"$\alpha,\beta$ specify the chosen nontrivial square classes and may "
+        r"be equal or distinct. The nonzero scalars $\mu_1,\mu_2\in F^\times$ "
+        r"weight the two norm terms, while $\lambda\in F^\times$ weights "
+        r"the final $z^2$ term; in this constructor, the square class of "
+        r"$\lambda$ is determined by $\alpha,\beta$. Choose parameters "
+        r"satisfying the displayed split $\mathrm{SO}(5)$ Hilbert-symbol condition."
+    )
     st.caption("The existing Stage 1 constructor is used unchanged.")
 
     minus_one_square = st.radio(
@@ -84,9 +124,21 @@ with tab_biquad:
     st.latex(r"K=F(A,B),\quad A^2=\alpha,\quad B^2=\beta,\quad E_1=F(A)")
     st.latex(r"x=a+bA+(c+dA)B")
     st.latex(r"q_{\mu,\lambda}(x,z)=\operatorname{Tr}_{K/F}\!\left(\frac{\mu}{4}x\sigma(x)\right)+\lambda z^2")
+    st.markdown(
+        r"Here $K/F$ is biquadratic, $E_1=F(A)$ is a quadratic subfield, "
+        r"$A^2=\alpha$, $B^2=\beta$, and $\alpha,\beta$ are distinct "
+        r"nontrivial square classes. The coordinates $a,b,c,d\in F$ define "
+        r"$x=a+bA+(c+dA)B\in K$, and $z\in F$. The automorphism $\sigma$ "
+        r"fixes $A$ and sends $B$ to $-B$, so "
+        r"$x\sigma(x)=N_{K/E_1}(x)$ is the relative norm. "
+        r"$\operatorname{Tr}_{K/F}$ denotes the field trace. The parameter "
+        r"$\mu\in E_1^\times$ selects the relevant norm class, and "
+        r"$\lambda\in F^\times$ is the coefficient on the $F$-coordinate; "
+        r"the interface sets $\lambda=\rho^2$."
+    )
     st.caption(
-        "Choose distinct nontrivial square classes. Here σ fixes A and sends B to −B. "
-        "All displayed vectors use the original coordinates (1, A, B, AB; z)."
+        "Choose distinct nontrivial square classes. All displayed vectors use "
+        "the original coordinates (1, A, B, AB; z)."
     )
 
     square = st.radio(
@@ -223,11 +275,20 @@ with tab_quartic:
     st.subheader("Quartic Extensions")
 
     st.markdown(
-        "Constructive Witt bases for quartic elliptic tori "
-        "in the split group SO(5)."
+        r"Constructive Witt bases for quartic elliptic tori in split $\mathrm{SO}(5)$. "
+        r"Let $E_1=F(\sqrt{\alpha})$ and $K=E_1(\delta)$, where "
+        r"$\delta^2=d\in E_1^\times\setminus E_1^{\times 2}$. In the "
+        r"implemented cases, $K/F$ is a quartic field with unique quadratic "
+        r"subfield $E_1$. The quadratic form on $K\oplus F$ is "
+        r"$q_{\mu_4,\lambda}(x,z)=\frac14\operatorname{Tr}_{K/F}("
+        r"\mu_4 x\sigma(x))+\lambda z^2$, where $x\in K$, $z\in F$, "
+        r"$\sigma$ fixes $E_1$ and sends $\delta$ to $-\delta$, and "
+        r"$x\sigma(x)=N_{K/E_1}(x)$. Here $\mu_4\in E_1^\times$ and "
+        r"$\lambda\in F^\times$ are the coefficients of the trace and "
+        r"$F$-coordinate terms. The selectors below specify the implemented "
+        r"admissible cases."
     )
 
-    
     import sympy as sp
 
     minus_one_square = st.radio(
