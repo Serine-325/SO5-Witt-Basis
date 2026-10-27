@@ -368,6 +368,33 @@ with tab_quartic:
         }
 
         r_value = d_coefficients[d_choice]
+ 
+    if quartic_case == "Exceptional twisted: d = eta*pi":
+        mu4_options = ["eta", "1"]
+    elif subfield in ["F(sqrt(epsilon))", "F(sqrt(-1))"]:
+        mu4_options = ["1", "varpi"]
+    else:
+        mu4_options = ["1", "epsilon"]
+
+    mu4_choice = st.radio(
+        "Choose the quartic coefficient μ₄",
+        mu4_options,
+        format_func=lambda v: {
+            "1": "1",
+            "eta": "η",
+            "varpi": "ϖ",
+            "epsilon": "ε"
+        }[v],
+        horizontal=True,
+        key=f"quartic_mu4_{minus_one_square}_{subfield}_{d_choice}",
+    )
+
+    if mu4_choice != mu4_options[0]:
+        st.error(
+            "Rejected: the selected μ₄ belongs to the non-admissible "
+            "norm class and does not give split SO(5)."
+        )
+        st.stop()
 
     st.info(
         "The quartic constructions will be displayed here, "
