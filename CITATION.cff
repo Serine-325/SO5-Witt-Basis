@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software in your research, please cite it using this file."
+type: software
+
+title: "SO(5) Witt Basis: Explicit Constructions and Symbolic Verification"
+
+authors:
+  - family-names: "Bairakji"
+    given-names: "Serine"
+
+repository-code: "https://github.com/Serine-325/SO5-Witt-Basis"
+
+url: "https://so5-witt-basis.onrender.com"
+
+abstract: >-
+  Python implementations of explicit Witt basis constructions
+  for elliptic maximal tori in split SO(5).
+  The software covers sums of two quadratic extensions,
+  biquadratic extensions, and quartic extensions.
+  It includes admissibility checks, symbolic Gram-matrix
+  verification, automated tests, and an interactive
+  Streamlit application.
