@@ -10,12 +10,17 @@ from building import compute_biquadratic_building
 from building_panel import display_building
 
 st.set_page_config(
-    page_title="SO(5) | Explicit Witt Basis Constructor",
+    page_title="SO(5) — Witt Bases and Bruhat–Tits Building",
     page_icon="📐",
     layout="wide",
 )
 
-st.title("Explicit Witt Bases for Elliptic Tori in Split SO(5)")
+
+st.title(
+    "Explicit Witt Bases and Bruhat–Tits Building "
+    "Computations for Elliptic Maximal Tori in Split SO(5)"
+)
+
 st.caption("Research software · Two quadratic extensions, biquadratic extensions, and quartic extensions")
 st.markdown(
     "Construct explicit Witt bases from elliptic torus parameters and "

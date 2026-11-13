@@ -1,14 +1,21 @@
-# Explicit Witt Bases for Elliptic Maximal Tori in Split SO(5)
 
-This Python research project constructs and verifies **explicit Witt bases** for quadratic spaces associated with elliptic maximal tori in the split group $\mathrm{SO}(5)$. It is based on doctoral research in the representation theory of $p$-adic groups at the University of Ottawa.
+# Explicit Witt Bases and Bruhat–Tits Building Computations for Elliptic Maximal Tori in Split SO(5)
 
-For each supported split quadratic space, the program explicitly constructs a Witt basis $(e_1,e_2,f_1,f_2,g_1)$ and verifies its Gram matrix symbolically. The constructions use the algebraic structure of the corresponding field extensions, including norm equations and trace forms. This connects theoretical results from the doctoral research with executable, mathematically verified Python algorithms.
+This Python research project constructs and verifies **explicit Witt bases** for quadratic spaces associated with elliptic maximal tori in the split group $\mathrm{SO}(5)$ and computes their corresponding points in the **Bruhat–Tits building**. It is based on doctoral research in the representation theory of $p$-adic groups at the University of Ottawa and ongoing joint research with Professor Monica Nevins.
 
-**[Launch the interactive Witt Basis Constructor](https://so5-witt-basis.onrender.com/)** — explore parameters, inspect the basis vectors, and check their Gram matrices in a web interface. No local installation or GitHub account is needed to use the app.
+For each supported split quadratic space, the program explicitly constructs a Witt basis $(e_1,e_2,f_1,f_2,g_1)$ and verifies its Gram matrix symbolically. The constructions use the algebraic structure of the corresponding field extensions, including norm equations and trace forms.
 
-**Implemented:** constructions for sums of two quadratic extensions, biquadratic extensions, and three quartic cases. **Verification:** symbolic Gram-matrix checks in SymPy, arithmetic and admissibility tests for supported local-field settings, and automated tests using pytest and GitHub Actions. **Test status (October 19, 2026): 188 tests passed.**
+The project also develops algorithms to determine the corresponding building points directly from the constructed Witt bases, using toral generators, root coefficients, valuations, and Moy–Prasad filtration inequalities. The computed points are expressed in the fundamental alcove and displayed graphically in the interactive application.
 
-**Research boundary:** the Witt basis stage is implemented; the algorithms to locate corresponding points in the Bruhat–Tits building are planned work. The arithmetic routines currently cover specific local fields and examples, not all non-archimedean local fields.
+**[Launch the interactive Witt Basis and Building Constructor](https://so5-witt-basis.onrender.com/)** — explore torus parameters, inspect the basis vectors, verify their Gram matrices, and visualize the corresponding building points for biquadratic extensions. No local installation or GitHub account is needed to use the app.
+
+**Implemented:** Explicit Witt basis constructions for sums of two quadratic extensions, biquadratic extensions, and three quartic cases. Bruhat–Tits building computations for biquadratic elliptic tori.
+
+**Verification:** Symbolic Gram-matrix checks in SymPy, arithmetic and admissibility tests for supported local-field settings, and automated tests using pytest and GitHub Actions.
+
+**Test status (November 13, 2026): 246 tests passed**, including 37 tests for Bruhat–Tits building computations.
+
+**Research boundary:** The Witt basis stage is implemented for all three families. The Bruhat–Tits building stage is implemented for biquadratic extensions, including the exceptional unramified case. Building computations for sums of two quadratic extensions and quartic extensions are planned work. The arithmetic routines currently cover specific local fields and examples, not all non-archimedean local fields.
 
 ## Quick start
 
@@ -30,9 +37,20 @@ $$
 G=\mathrm{SO}(2\mathbb H\oplus\langle1\rangle)\simeq\mathrm{SO}(5).
 $$
 
-The long-term goal is to compute the points in the Bruhat–Tits building associated with these tori, directly from their defining parameters and quadratic forms. The first stage constructs explicit Witt bases, giving coordinates for the lattice calculations needed in that work.
 
-The implementation treats three types of étale $F$-algebras:
+The research project has two main objectives:
+
+1. Construct explicit Witt bases for the split quadratic spaces associated with elliptic maximal tori, directly from their defining parameters and quadratic forms.
+
+2. Determine the corresponding points in the Bruhat–Tits building using the constructed Witt bases, the Lie algebras of the tori, and Moy–Prasad filtration conditions.
+
+The explicit Witt basis provides coordinates for a split maximal torus and its apartment. Relative to this basis, the Lie algebra elements of an elliptic torus are expressed as matrices, from which the root coefficients and their valuations are computed.
+
+The resulting Moy–Prasad inequalities determine the building point in the apartment. Affine Weyl group transformations then give its representative in the fundamental alcove.
+
+This framework is currently implemented for biquadratic elliptic tori. The remaining two families will be treated using the same mathematical approach.
+
+The implementation treats three families of elliptic maximal tori, classified according to their associated $F$-algebras:
 
 1. **Two quadratic extensions:** $F(\sqrt{\alpha})\oplus F(\sqrt{\beta})\oplus F$.
 2. **Biquadratic extension:** $K\oplus F$, where $K/F$ is biquadratic.
@@ -255,6 +273,84 @@ $$
 Hence $A\in N_{K/E_1}(K^\times)$, so $[A]=[1]$ in $E_1^\times/N_{K/E_1}(K^\times)$. Therefore $\mu=1$ is the representative corresponding to the split quadratic space in this example.
 
 The Witt basis and norm identity are verified in [examples/biquadratic_canonical.py](examples/biquadratic_canonical.py).
+
+
+#### Bruhat–Tits building computations
+
+**Python files:** `building.py` and `building_panel.py`
+
+Let $K=F(A,B)$, where $A^2=\alpha$, $B^2=\beta$, and $E_1=F(A)$. The involution $\sigma$ fixes $A$ and sends $B$ to $-B$.
+
+The Lie algebra of the corresponding elliptic maximal torus is
+
+$$
+\mathfrak{t}=FB\oplus FAB.
+$$
+
+The algorithm uses the two generators
+
+$$
+X_1=B,\qquad X_2=AB,
+$$
+
+whose depths are
+
+$$
+r_1=\frac{\nu(\beta)}{2},\qquad
+r_2=\frac{\nu(\alpha\beta)}{2},
+$$
+
+where $\nu$ is the normalized valuation on $F$.
+
+##### Computational method
+
+1. Construct the explicit Witt basis associated with the selected torus.
+2. Express the action of $X_1$ and $X_2$ as matrices relative to the ordered Witt basis $(e_1,e_2,f_1,f_2,g_1)$.
+3. Extract the root coefficients and compute their valuations.
+4. Apply the Moy–Prasad filtration inequalities to determine the building point.
+5. Use affine Weyl group transformations to obtain its representative in the fundamental alcove.
+
+For each positive root $\gamma$, the filtration condition is expressed as
+
+$$
+r-\nu(c_\gamma(X))
+\leq \gamma(x)
+\leq \nu(c_{-\gamma}(X))-r,
+$$
+
+where $c_\gamma(X)$ denotes the root coefficient of $X$ relative to the constructed Witt basis.
+
+The fundamental alcove is given by
+
+$$
+x_1\geq x_2\geq 0,\qquad x_1+x_2\leq 1.
+$$
+
+##### Computed building points
+
+| $\alpha$ | $\beta$ | Fundamental alcove point |
+|---|---|---|
+| $\epsilon$ | $\varpi$ | $(1/2,0)$ |
+| $\varpi$ | $\epsilon$ | $(1/4,1/4)$ |
+| $\epsilon\varpi$ | $\epsilon$ | $(1/4,1/4)$ |
+
+Here $\epsilon$ is a nonsquare unit and $\varpi$ is a uniformizer of $F$.
+
+The implementation covers both ramified and unramified quadratic intermediate fields, including the exceptional unramified case where $-1$ is not a square in $F$.
+
+##### Interactive visualization
+
+The Streamlit application displays:
+
+- Parameter valuations and toral generator depths.
+- Root coefficients and their valuations.
+- Moy–Prasad filtration inequalities.
+- The computed building point in the apartment.
+- The affine Weyl group transformations used to reach the fundamental alcove.
+- A diagram of the fundamental alcove with the computed point.
+
+The building computations are verified by 37 automated tests in `tests/test_building.py`.
+
 
 ## 3. Quartic extensions
 
@@ -680,18 +776,23 @@ This verifies the Witt basis identities exactly under the defining algebraic rel
 |---|---|
 | `Witt_Basis_Sum_Quadratics.py` | Constructs Witt bases for sums of two quadratic extensions. |
 | `biquadratic.py` | Constructs Witt bases for biquadratic extensions. |
+| `building.py` | Computes Bruhat–Tits building points using toral generators, root coefficients, valuations, and Moy–Prasad inequalities. |
+| `building_panel.py` | Displays building computations, fundamental alcove coordinates, and diagrams in Streamlit. |
 | `quartic.py` | Constructs symbolic Witt bases for three quartic cases. |
 | `app.py` | Streamlit interface for all three families. |
 | `web_runner.py` | Connects the quadratic construction to the web application. |
 | `verification_panel.py` | Provides supporting verification functionality. |
 | `tests/` | Contains automated tests for the mathematical constructions. |
 | `tests/test_biquadratic.py` | Tests the biquadratic Witt basis constructions. |
+| `tests/test_building.py` | Contains 37 automated tests for the Bruhat–Tits building computations. |
 | `tests/test_quartic.py` | Tests the quartic Witt basis constructions. |
 | `.github/workflows/tests.yml` | Runs the Python test suite automatically using GitHub Actions. |
 | `requirements.txt` | Lists the Python dependencies. |
 | `README.md` | Documents the mathematical framework, implementation, and research objectives. |
 
-The interactive application is available through the link at the beginning of this README. The last reported full test run had **188 passing tests** (October 18, 2026).
+
+The interactive application is available through the link at the beginning of this README. The latest full test run had **246 passing tests** (November 13, 2026), including 37 tests for Bruhat–Tits building computations.
+
 
 ## Research development plan
 
@@ -703,15 +804,36 @@ The interactive application is available through the link at the beginning of th
 
 - [x] Quartic field extensions with a unique quadratic subfield — implemented and tested.
 
+
 ### Stage 2 — Bruhat–Tits Building Computations
 
-- [ ] Express the relevant lattice data in the constructed Witt bases.
+#### Biquadratic extensions
 
-- [ ] Determine the corresponding points in the Bruhat–Tits building.
+- [x] Construct the toral generators and compute their depths.
+- [x] Express the Lie algebra elements as matrices relative to the constructed Witt basis.
+- [x] Compute root coefficients and their valuations.
+- [x] Derive the Moy–Prasad filtration inequalities.
+- [x] Determine the corresponding building points.
+- [x] Reduce the computed points to the fundamental alcove using affine Weyl group transformations.
+- [x] Verify the results against the theoretical classification.
+- [x] Implement interactive building diagrams in Streamlit.
+- [x] Add 37 automated tests for the building computations.
 
-- [ ] Implement valuation and coordinate calculations.
+#### Sums of two quadratic extensions
 
-- [ ] Compare the computed results with the theoretical classification.
+- [ ] Implement building computations for equal quadratic extensions.
+- [ ] Implement building computations for distinct quadratic extensions.
+- [ ] Verify the computed points against the theoretical classification.
+- [ ] Integrate the computations and diagrams into Streamlit.
+
+#### Quartic extensions
+
+- [ ] Implement building computations for pure quartic extensions.
+- [ ] Implement building computations for exceptional unramified quartic extensions.
+- [ ] Implement building computations for exceptional partially ramified quartic extensions.
+- [ ] Verify the computed points against the theoretical classification.
+- [ ] Integrate the computations and diagrams into Streamlit.
+
 
 ### Stage 3 — Verification and Documentation
 
