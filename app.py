@@ -4,7 +4,11 @@ import sympy as sp
 from verification_panel import render_sum_verification
 from web_runner import CLASSES, MU_OPTIONS, run_constructor, valid_parameters
 from biquadratic import construct_biquadratic
+
 from quartic_mu4 import mu4_options_for_case, is_admissible_mu4
+from building import compute_biquadratic_building
+from building_panel import display_building
+
 st.set_page_config(
     page_title="SO(5) | Explicit Witt Basis Constructor",
     page_icon="📐",
@@ -254,6 +258,19 @@ with tab_biquad:
                 "All computations are formal identities. The application does not "
                 "implement arithmetic or norm-equation solving in a specified local field."
             )
+         
+        # Compute and display the building
+        try:
+            building_result = compute_biquadratic_building(
+                result
+            )
+            display_building(building_result)
+
+        except (ValueError, ArithmeticError) as error:
+            st.warning(
+                f"Building computation: {error}"
+            )
+   
         st.download_button(
             "Download biquadratic result (.txt)", data=result.report(),
             file_name="SO5_Biquadratic_Witt_Basis.txt", mime="text/plain",
@@ -265,7 +282,7 @@ st.markdown(
     "in split SO(5), including sums of two quadratic extensions, "
     "biquadratic extensions, and quartic extensions with a unique "
     "quadratic subfield. The application provides symbolic Gram-matrix "
-    "verification. Bruhat–Tits building calculations are not implemented here."
+    "verification. Bruhat-Tits building calculations are currently available for biquadratic extensions."
 )
 st.markdown(
     "Source repository: [SO5-Witt-Basis](https://github.com/Serine-325/SO5-Witt-Basis)."
