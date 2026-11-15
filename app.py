@@ -7,9 +7,12 @@ from biquadratic import construct_biquadratic
 
 from quartic_mu4 import mu4_options_for_case, is_admissible_mu4
 
+
 from building import (
     compute_biquadratic_building,
     compute_sum_quadratic_building,
+    compute_pure_quartic_building,
+    compute_exceptional_quartic_building,
 )
 
 from building_panel import display_building
@@ -528,10 +531,21 @@ with tab_quartic:
         st.markdown("**Computed Gram matrix**")
         st.latex(sp.latex(gram))
 
+
         if gram == TARGET_GRAM:
             st.success("Symbolic verification successful.")
+
+            try:
+                building_result = compute_pure_quartic_building(
+                    alpha, r, varpi, epsilon
+                )
+                display_building(building_result)
+            except ValueError as exc:
+                st.warning(f"Building computation: {exc}")
+
         else:
             st.error("Gram matrix verification failed.")
+
     elif quartic_case == "Exceptional unramified: d = eta":
 
         from quartic import (
@@ -619,10 +633,19 @@ with tab_quartic:
         st.markdown("**Computed Gram matrix**")
         st.latex(sp.latex(gram_reduced))
 
+
         if gram_reduced == TARGET_GRAM:
             st.success("Symbolic verification successful.")
+           
+            try:
+                building_result = compute_exceptional_quartic_building()
+                display_building(building_result)
+            except ValueError as exc:
+                st.warning(f"Building computation: {exc}")
+
         else:
             st.error("Gram matrix verification failed.")
+
     elif quartic_case == "Exceptional twisted: d = eta*pi":
 
         from quartic import (
@@ -708,5 +731,14 @@ with tab_quartic:
 
         if gram_reduced == TARGET_GRAM:
             st.success("Symbolic verification successful.")
+
+            from building import compute_exceptional_twisted_quartic_building
+
+            try:
+                building_result = compute_exceptional_twisted_quartic_building()
+                display_building(building_result)
+            except ValueError as exc:
+                st.warning(f"Building computation: {exc}")
+
         else:
             st.error("Gram matrix verification failed.")

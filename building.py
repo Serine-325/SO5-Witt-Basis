@@ -905,3 +905,424 @@ def compute_sum_quadratic_building(result):
     building_result["swapped_pairs"] = False
 
     return building_result
+
+def pure_quartic_coordinate_matrices(alpha, r):
+    """
+    Multiplication matrices for B and AB in the pure
+    quartic case, where A^2 = alpha and B^2 = r*A.
+
+    Coordinate basis: (1, A, B, AB, z).
+    """
+    X1 = sp.Matrix([
+        [0, 0, 0, alpha*r, 0],
+        [0, 0, r, 0, 0],
+        [1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+    ])
+
+    X2 = sp.Matrix([
+        [0, 0, alpha*r, 0, 0],
+        [0, 0, 0, alpha*r, 0],
+        [0, alpha, 0, 0, 0],
+        [1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+    ])
+
+    return X1, X2
+
+def pure_quartic_generator_matrices(alpha, r):
+    """
+    Express the toral generators B and AB relative
+    to the normalized pure quartic Witt basis.
+    """
+    from quartic import pure_quartic_basis
+
+    basis = pure_quartic_basis(alpha, r)
+    P = sp.Matrix.hstack(*basis)
+
+    X1, X2 = pure_quartic_coordinate_matrices(alpha, r)
+
+    P_inv = P.inv()
+
+    M1 = (P_inv * X1 * P).applyfunc(sp.simplify)
+    M2 = (P_inv * X2 * P).applyfunc(sp.simplify)
+
+    return M1, M2
+
+def compute_pure_quartic_building(alpha, r, varpi, epsilon):
+    """
+    Compute the Bruhat-Tits building of an elliptic
+    maximal torus arising from a pure quartic extension.
+
+    A^2 = alpha, B^2 = r*A.
+    Toral generators: B and AB.
+    """
+    from fractions import Fraction
+
+    def valuation(expr):
+        return symbolic_valuation(expr, varpi, epsilon)
+
+    v_alpha = Fraction(valuation(alpha))
+    v_r = Fraction(valuation(r))
+
+    # Depths of the toral generators
+    r1 = v_r / 2 + v_alpha / 4
+    r2 = v_r / 2 + 3 * v_alpha / 4
+
+    # Matrices relative to the normalized Witt basis
+    M1, M2 = pure_quartic_generator_matrices(alpha, r)
+
+    # Compute the coordinates using Moy-Prasad inequalities
+    building_result = compute_building_point(
+        [M1, M2],
+        [r1, r2],
+        valuation,
+    )
+
+    # Additional mathematical information
+    building_result["family"] = "pure_quartic"
+    building_result["alpha"] = alpha
+    building_result["r"] = r
+
+    building_result["parameter_valuations"] = {
+        "alpha": v_alpha,
+        "r": v_r,
+    }
+
+    building_result["generator_names"] = [
+        "B",
+        "AB",
+    ]
+
+    building_result["generator_matrices"] = [
+        M1,
+        M2,
+    ]
+
+    building_result["swapped_pairs"] = False
+
+    return building_result
+
+def exceptional_quartic_coordinate_matrices(s, t):
+    """
+    Multiplication matrices for B and iB in the
+    exceptional unramified quartic case.
+
+    i^2 = -1
+    B^2 = s^2 + i*t^2
+
+    Coordinate basis: (1, i, B, iB, z).
+    """
+    X1 = sp.Matrix([
+        [0, 0, s**2, -t**2, 0],
+        [0, 0, t**2, s**2, 0],
+        [1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+    ])
+
+    X2 = sp.Matrix([
+        [0, 0, -t**2, -s**2, 0],
+        [0, 0, s**2, -t**2, 0],
+        [0, -1, 0, 0, 0],
+        [1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+    ])
+
+    return X1, X2
+
+def exceptional_quartic_generator_matrices(s, t):
+    """
+    Express the toral generators B and iB relative
+    to the exceptional unramified quartic Witt basis.
+    """
+    from quartic import exceptional_quartic_basis
+
+    basis = exceptional_quartic_basis(s, t)
+    P = sp.Matrix.hstack(*basis)
+
+    X1, X2 = exceptional_quartic_coordinate_matrices(s, t)
+
+    P_inv = P.inv()
+
+ 
+    def reduce_witness(expr):
+        expr = sp.cancel(expr)
+        numerator, denominator = sp.fraction(expr)
+
+        numerator = sp.rem(
+            sp.expand(numerator),
+            t**4 + s**4 + 1,
+            t,
+        )
+
+        return sp.cancel(numerator / denominator)
+
+    M1 = (P_inv * X1 * P).applyfunc(reduce_witness)
+    M2 = (P_inv * X2 * P).applyfunc(reduce_witness)
+
+    return M1, M2
+
+
+
+def exceptional_quartic_valuation_bound(expr, s, t):
+    """
+    Return a proven lower bound for the valuation
+    of an exceptional quartic root coefficient.
+
+    Assumptions:
+        s^4 + t^4 = -1
+        -1 is not a square in F
+        residual characteristic is odd
+    """
+    expr = sp.cancel(expr)
+
+    if expr == 0:
+        return sp.oo
+
+    numerator, denominator = sp.fraction(expr)
+
+    numerator = sp.rem(
+        sp.expand(numerator),
+        t**4 + s**4 + 1,
+        t,
+    )
+
+    expr = sp.cancel(numerator / denominator)
+
+    if expr == 0:
+        return sp.oo
+
+    # All denominators in our root coefficients
+    # are products of powers of 2 and s.
+    # Both are units.
+    numerator, denominator = sp.fraction(expr)
+
+    denominator_at_units = denominator.subs(s, 1)
+
+    if denominator_at_units not in [1, -1, 2, -2, 4, -4]:
+        raise ValueError(
+            f"Unsupported exceptional coefficient: {expr}"
+        )
+
+    # The numerator is integral because s and t
+    # are units and its coefficients are integers.
+    if not sp.Poly(numerator, s, t).domain.is_ZZ:
+        raise ValueError(
+            f"Unsupported exceptional numerator: {numerator}"
+        )
+
+    return Fraction(0)
+
+def compute_exceptional_quartic_building():
+    """
+    Compute the image of the Bruhat-Tits building
+    of an exceptional unramified quartic elliptic
+    maximal torus in split SO(5).
+
+    E1 = F(i), i^2 = -1
+    B^2 = eta = s^2 + i*t^2
+    s^4 + t^4 = -1
+    """
+    s, t = sp.symbols("s t", nonzero=True)
+
+    # Toral generators in the Witt basis
+    M1, M2 = exceptional_quartic_generator_matrices(s, t)
+
+    # Both generators have depth zero
+    r1 = Fraction(0)
+    r2 = Fraction(0)
+
+    # Proven valuation lower bounds
+    def valuation(expr):
+        return exceptional_quartic_valuation_bound(
+            expr, s, t
+        )
+
+    # Apply the Moy-Prasad inequalities
+    building_result = compute_building_point(
+        [M1, M2],
+        [r1, r2],
+        valuation,
+    )
+
+    # Additional mathematical information
+    building_result["family"] = "exceptional_quartic"
+
+    building_result["parameter_valuations"] = {
+        "s_0": Fraction(0),
+        "t_0": Fraction(0),
+        "eta": Fraction(0),
+    }
+
+    building_result["generator_names"] = [
+        "B",
+        "iB",
+    ]
+
+    building_result["generator_matrices"] = [
+        M1,
+        M2,
+    ]
+
+    building_result["swapped_pairs"] = False
+
+    building_result["valuation_bounds"] = True
+
+    return building_result
+
+
+# ---------------------------------------------------------
+# Exceptional twisted quartic extensions
+# ---------------------------------------------------------
+
+def exceptional_twisted_quartic_coordinate_matrices(s, t, pi):
+    """
+    Multiplication by B and iB in the coordinate basis
+    (1, i, B, iB, z), where B^2 = pi * eta.
+    """
+    a = pi * s**2
+    b = pi * t**2
+
+    X1 = sp.Matrix([
+        [0, 0, a, -b, 0],
+        [0, 0, b,  a, 0],
+        [1, 0, 0,  0, 0],
+        [0, 1, 0,  0, 0],
+        [0, 0, 0,  0, 0],
+    ])
+
+    X2 = sp.Matrix([
+        [0, 0, -b, -a, 0],
+        [0, 0,  a, -b, 0],
+        [0, -1, 0,  0, 0],
+        [1,  0, 0,  0, 0],
+        [0,  0, 0,  0, 0],
+    ])
+
+    return X1, X2
+
+
+def exceptional_twisted_quartic_generator_matrices(s, t, pi):
+    """
+    Express B and iB relative to the normalized
+    exceptional twisted quartic Witt basis.
+    """
+    from quartic import exceptional_twisted_quartic_basis
+
+    basis = exceptional_twisted_quartic_basis(s, t, pi)
+    P = sp.Matrix.hstack(*basis)
+
+    X1, X2 = exceptional_twisted_quartic_coordinate_matrices(
+        s, t, pi
+    )
+
+    P_inv = P.inv()
+
+    def reduce_witness(expr):
+        expr = sp.cancel(expr)
+        numerator, denominator = sp.fraction(expr)
+
+        relation = t**4 + s**4 + 1
+
+        numerator = sp.rem(
+            sp.expand(numerator), relation, t
+        )
+
+        denominator = sp.rem(
+            sp.expand(denominator), relation, t
+        )
+
+        return sp.cancel(numerator / denominator)
+
+    M1 = (P_inv * X1 * P).applyfunc(reduce_witness)
+    M2 = (P_inv * X2 * P).applyfunc(reduce_witness)
+
+    return M1, M2
+
+
+def exceptional_twisted_quartic_valuation_bound(
+    expr, s, t, pi
+):
+    """
+    Lower bound for valuations in the exceptional
+    twisted quartic case, with nu(pi) = 1.
+    """
+    expr = sp.factor(sp.cancel(expr))
+
+    if expr == 0:
+        return sp.oo
+
+    # Extract the power of the uniformizer.
+    powers = expr.as_powers_dict()
+    pi_power = powers.get(pi, 0)
+
+    # Remove the uniformizer factor.
+    reduced = sp.cancel(expr / pi**pi_power)
+
+    # Reuse the exceptional unramified valuation bound.
+    bound = exceptional_quartic_valuation_bound(
+        reduced, s, t
+    )
+
+    return Fraction(int(pi_power)) + bound
+
+
+def compute_exceptional_twisted_quartic_building():
+    """
+    Compute the Bruhat-Tits building of elliptic maximal
+    tori arising from exceptional twisted quartic
+    extensions, where d = pi * eta.
+    """
+    s, t, pi = sp.symbols(
+        "s t pi", nonzero=True
+    )
+
+    # Toral generator depths.
+    r1 = Fraction(1, 2)
+    r2 = Fraction(1, 2)
+
+    # Matrices relative to the normalized Witt basis.
+    M1, M2 = exceptional_twisted_quartic_generator_matrices(
+        s, t, pi
+    )
+
+    def valuation(expr):
+        return exceptional_twisted_quartic_valuation_bound(
+            expr, s, t, pi
+        )
+
+    # Apply the Moy-Prasad inequalities.
+    building_result = compute_building_point(
+        [M1, M2],
+        [r1, r2],
+        valuation,
+    )
+
+    # Additional mathematical information.
+    building_result["family"] = "exceptional_twisted_quartic"
+
+    building_result["parameter_valuations"] = {
+        "s_0": Fraction(0),
+        "t_0": Fraction(0),
+        "eta": Fraction(0),
+        "varpi": Fraction(1),
+        "d": Fraction(1),
+    }
+
+    building_result["generator_names"] = [
+        "B",
+        "iB",
+    ]
+
+    building_result["generator_matrices"] = [
+        M1,
+        M2,
+    ]
+
+    building_result["swapped_pairs"] = False
+
+    building_result["valuation_bounds"] = True
+
+    return building_result

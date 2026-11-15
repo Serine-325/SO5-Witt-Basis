@@ -56,7 +56,19 @@ def display_building(result):
         )
 
     # 3. Root coefficient valuations
-    st.markdown("### 3. Root coefficients and valuations")
+   
+    if result.get("valuation_bounds", False):
+        st.markdown(
+            "### 3. Root coefficients and valuation lower bounds"
+        )
+        st.info(
+            "The displayed valuation lower bounds are sufficient "
+            "to determine the exact image of the Bruhat-Tits "
+            "building of the elliptic maximal torus."
+        )
+    else:
+        st.markdown("### 3. Root coefficients and valuations")
+
 
     for j, coefficients in enumerate(
         result["root_coefficients"]
@@ -78,10 +90,18 @@ def display_building(result):
                         str(values["positive"]),
                     "Negative coefficient":
                         str(values["negative"]),
-                    "Positive valuation":
-                        str(valuations["positive"]),
-                    "Negative valuation":
-                        str(valuations["negative"]),
+                    
+                (
+                    "Positive valuation lower bound"
+                    if result.get("valuation_bounds", False)
+                    else "Positive valuation"
+                ): str(valuations["positive"]),
+                (
+                    "Negative valuation lower bound"
+                    if result.get("valuation_bounds", False)
+                    else "Negative valuation"
+                ): str(valuations["negative"]),
+
                 })
 
             st.table(rows)

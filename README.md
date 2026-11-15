@@ -7,14 +7,16 @@ For each supported split quadratic space, the program explicitly constructs a Wi
 
 The project also develops algorithms to determine the corresponding building points directly from the constructed Witt bases, using toral generators, root coefficients, valuations, and Moy–Prasad filtration inequalities. The computed points are expressed in the fundamental alcove and displayed graphically in the interactive application.
 
-**[Launch the interactive Witt Basis and Building Constructor](https://so5-witt-basis.onrender.com/)** — explore torus parameters, inspect the basis vectors, verify their Gram matrices, and visualize the Bruhat–Tits buildings of elliptic maximal tori arising from sums of two quadratic extensions and biquadratic extensions. No local installation or GitHub account is needed to use the app.
 
-**Implemented:** Explicit Witt basis constructions for sums of two quadratic extensions, biquadratic extensions, and three quartic cases. Computation of the Bruhat–Tits buildings of elliptic maximal tori arising from sums of two quadratic extensions and biquadratic extensions.
+**[Launch the interactive Witt Basis and Building Constructor](https://so5-witt-basis.onrender.com/)** — explore torus parameters, inspect the basis vectors, verify their Gram matrices, and visualize the Bruhat–Tits building points for all three families of elliptic maximal tori. No local installation or GitHub account is needed to use the app.
+
+**Implemented:** Explicit Witt basis constructions and Bruhat–Tits building computations for sums of two quadratic extensions, biquadratic extensions, and all three quartic cases: pure quartic, exceptional unramified, and exceptional twisted.
 
 **Verification:** Symbolic Gram-matrix checks in SymPy, arithmetic and admissibility tests for supported local-field settings, and automated tests using pytest and GitHub Actions.
 
-**Test status (November 14, 2026): 270 tests passed**, including 61 tests for Bruhat–Tits building computations.
-**Research boundary:** The Witt basis stage is implemented for all three families. The Bruhat–Tits building stage is implemented for elliptic maximal tori arising from sums of two quadratic extensions (Cases 4.1, 4.2, and 4.3) and biquadratic extensions, including the exceptional unramified case. The Bruhat–Tits buildings of elliptic maximal tori arising from quartic extensions are planned work. The arithmetic routines currently cover specific local fields and examples, not all non-archimedean local fields.
+**Test status (November 14, 2026): 294 tests passed**, including 85 tests for Bruhat–Tits building computations.
+
+**Research boundary:** The Witt basis and Bruhat–Tits building stages are implemented for all three families of elliptic maximal tori in split SO(5). The arithmetic routines currently cover specific local fields and examples, not all non-archimedean local fields.
 
 ## Quick start
 
@@ -531,6 +533,70 @@ In the worked examples over $\mathbb{Q}_3$, we specialize to $t_0=1$ and $s_0^4=
 
 The symbolic checks verify the algebraic identities of the constructed Witt bases. The existence of the required local-field parameters is established separately by the mathematical norm conditions.
 
+#### Bruhat–Tits building computations
+
+The building computations are implemented for all three quartic cases:
+
+1. Pure quartic extensions.
+2. Exceptional unramified quartic extension.
+3. Exceptional twisted quartic extension.
+
+##### Mathematical setting
+
+Let $E_1=F(\sqrt{\alpha})$ and $K=E_1(\delta)$, where $\delta^2=d$. The Lie algebra of the elliptic maximal torus is
+
+$$
+\mathfrak{t}=F\delta\oplus F\sqrt{\alpha}\delta.
+$$
+
+We use the toral generators
+
+$$
+X_1=\delta,\qquad X_2=\sqrt{\alpha}\delta,
+$$
+
+with depths
+
+$$
+r_1=\frac{\nu(d)}{2},\qquad
+r_2=\frac{\nu(\alpha)+\nu(d)}{2}.
+$$
+
+For the exceptional quartic cases, $\alpha=-1$ and
+
+$$
+\eta=s_0^2+it_0^2,\qquad s_0^4+t_0^4=-1.
+$$
+
+The unramified case has $d=\eta$, while the twisted case has $d=\eta\varpi$.
+
+##### Computational method
+
+The implementation follows the same method used for the preceding two families:
+
+1. Construct the normalized Witt basis.
+2. Express the two toral generators as matrices relative to this basis.
+3. Extract the positive and negative root coefficients.
+4. Compute their valuations or suitable valuation bounds.
+5. Apply the Moy–Prasad root inequalities.
+6. Solve for the building point and move it into the fundamental alcove.
+
+For the exceptional quartic cases, the symbolic computations use the relation $s_0^4+t_0^4=-1$. Valuation bounds are used when the exact valuation of a coefficient depends on the choice of the norm witnesses.
+
+##### Computed building points
+
+| Quartic case | Generator depths | Point in the fundamental alcove |
+|---|---|---|
+| Pure quartic, $d=\sqrt{\varpi}$ | $(1/4,3/4)$ | $(1/2,1/4)$ |
+| Exceptional unramified, $d=\eta$ | $(0,0)$ | $(0,0)$ |
+| Exceptional twisted, $d=\eta\varpi$ | $(1/2,1/2)$ | $(1/2,0)$ |
+
+##### Interactive visualization
+
+The Quartic extensions tab of the Streamlit application displays the constructed Witt basis, its Gram matrix verification, the toral generators and their depths, the root coefficients, the Moy–Prasad inequalities, and the resulting building point.
+
+The application also displays the fundamental alcove and the affine Weyl group transformations used to move the computed point into it.
+
 #### Running the tests
 
 ```bash
@@ -869,13 +935,15 @@ This verifies the Witt basis identities exactly under the defining algebraic rel
 | `tests/test_building.py` | Contains 37 automated tests for the Bruhat–Tits building computations. |
 | `tests/test_sum_quadratics_building.py` | Contains 24 automated tests for the Bruhat–Tits buildings of elliptic maximal tori arising from sums of two quadratic extensions. |
 | `tests/test_quartic.py` | Tests the quartic Witt basis constructions. |
+| `tests/test_pure_quartic_building.py` | Tests the Bruhat–Tits building computations for pure quartic extensions. |
+| `tests/test_exceptional_quartic_building.py` | Tests the Bruhat–Tits building computations for exceptional unramified quartic extensions. |
+| `tests/test_exceptional_twisted_quartic_building.py` | Tests the Bruhat–Tits building computations for exceptional twisted quartic extensions. |
 | `.github/workflows/tests.yml` | Runs the Python test suite automatically using GitHub Actions. |
 | `requirements.txt` | Lists the Python dependencies. |
 | `README.md` | Documents the mathematical framework, implementation, and research objectives. |
 
 
-The interactive application is available through the link at the beginning of this README. The latest full test run had **270 passing tests** (November 14, 2026), including 61 tests for Bruhat–Tits building computations: 37 for biquadratic extensions and 24 for sums of two quadratic extensions.
-
+The interactive application is available through the link at the beginning of this README. The latest full test run had **294 passing tests** (November 14, 2026), including 85 tests for Bruhat–Tits building computations: 24 for sums of two quadratic extensions, 37 for biquadratic extensions, and 24 for quartic extensions.
 
 ## Research development plan
 
@@ -911,36 +979,34 @@ The interactive application is available through the link at the beginning of th
 
 #### Quartic extensions
 
-- [ ] Implement building computations for pure quartic extensions.
-- [ ] Implement building computations for exceptional unramified quartic extensions.
-- [ ] Implement building computations for exceptional partially ramified quartic extensions.
-- [ ] Verify the computed points against the theoretical classification.
-- [ ] Integrate the computations and diagrams into Streamlit.
-
+- [x] Implement building computations for pure quartic extensions.
+- [x] Implement building computations for exceptional unramified quartic extensions.
+- [x] Implement building computations for exceptional twisted quartic extensions.
+- [x] Construct the toral generators and compute their depths.
+- [x] Compute the generator matrices relative to the constructed Witt bases.
+- [x] Compute root coefficients and their valuations or valuation bounds.
+- [x] Derive the Moy–Prasad filtration inequalities and determine the corresponding building points.
+- [x] Express the computed points in the fundamental alcove.
+- [x] Implement interactive building diagrams in Streamlit for all three quartic cases.
+- [x] Add 24 automated tests for the quartic building computations.
 
 ### Stage 3 — Verification and Documentation
 
 - [x] Implement automated checks for the biquadratic Witt basis construction.
-
 - [x] Provide an interactive interface for all three implemented families.
-
-
 - [x] Add verified worked examples for both [equal quadratic extensions](examples/sum_quadratics_equal_extensions.py) and [distinct quadratic extensions](examples/sum_quadratics_distinct_extensions.py), including explicit Witt bases and Gram-matrix verification.
-
 - [x] Add automated tests for all three worked examples in [tests/test_worked_examples.py](tests/test_worked_examples.py).
-
 - [x] Add a verified [biquadratic worked example](examples/biquadratic_canonical.py) over $\mathbb{Q}_3$, with $\alpha=-1$, $\beta=3$, and $\mu=\lambda=1$, including the norm-coset calculation and Witt basis verification.
-
 - [ ] Document the mathematical proofs and their relationship to the algorithms.
-
 - [x] Implement symbolic Witt basis constructions for the three quartic cases.
-
 - [x] Verify their Gram matrices using SymPy.
-
 - [x] Integrate the quartic constructions into the interactive application.
-
 - [x] Include worked quartic examples and document their mathematical assumptions.
-
+- [x] Verify the Bruhat–Tits building computations for all three families of elliptic maximal tori.
+- [x] Integrate the building computations and interactive diagrams into the Streamlit application for all three families.
+- [x] Add 85 automated tests for the Bruhat–Tits building computations.
+- [x] Achieve 294 passing tests across the complete test suite.
+- [x] Document the building computation methods and computed points in the fundamental alcove.
 ## Author
 
 **Serine Bairakji**
