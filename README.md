@@ -7,15 +7,14 @@ For each supported split quadratic space, the program explicitly constructs a Wi
 
 The project also develops algorithms to determine the corresponding building points directly from the constructed Witt bases, using toral generators, root coefficients, valuations, and Moy–Prasad filtration inequalities. The computed points are expressed in the fundamental alcove and displayed graphically in the interactive application.
 
-**[Launch the interactive Witt Basis and Building Constructor](https://so5-witt-basis.onrender.com/)** — explore torus parameters, inspect the basis vectors, verify their Gram matrices, and visualize the corresponding building points for biquadratic extensions. No local installation or GitHub account is needed to use the app.
+**[Launch the interactive Witt Basis and Building Constructor](https://so5-witt-basis.onrender.com/)** — explore torus parameters, inspect the basis vectors, verify their Gram matrices, and visualize the Bruhat–Tits buildings of elliptic maximal tori arising from sums of two quadratic extensions and biquadratic extensions. No local installation or GitHub account is needed to use the app.
 
-**Implemented:** Explicit Witt basis constructions for sums of two quadratic extensions, biquadratic extensions, and three quartic cases. Bruhat–Tits building computations for biquadratic elliptic tori.
+**Implemented:** Explicit Witt basis constructions for sums of two quadratic extensions, biquadratic extensions, and three quartic cases. Computation of the Bruhat–Tits buildings of elliptic maximal tori arising from sums of two quadratic extensions and biquadratic extensions.
 
 **Verification:** Symbolic Gram-matrix checks in SymPy, arithmetic and admissibility tests for supported local-field settings, and automated tests using pytest and GitHub Actions.
 
-**Test status (November 13, 2026): 246 tests passed**, including 37 tests for Bruhat–Tits building computations.
-
-**Research boundary:** The Witt basis stage is implemented for all three families. The Bruhat–Tits building stage is implemented for biquadratic extensions, including the exceptional unramified case. Building computations for sums of two quadratic extensions and quartic extensions are planned work. The arithmetic routines currently cover specific local fields and examples, not all non-archimedean local fields.
+**Test status (November 14, 2026): 270 tests passed**, including 61 tests for Bruhat–Tits building computations.
+**Research boundary:** The Witt basis stage is implemented for all three families. The Bruhat–Tits building stage is implemented for elliptic maximal tori arising from sums of two quadratic extensions (Cases 4.1, 4.2, and 4.3) and biquadratic extensions, including the exceptional unramified case. The Bruhat–Tits buildings of elliptic maximal tori arising from quartic extensions are planned work. The arithmetic routines currently cover specific local fields and examples, not all non-archimedean local fields.
 
 ## Quick start
 
@@ -191,7 +190,90 @@ $$
 
 The construction and Gram-matrix identities are verified in [examples/sum_quadratics_distinct_extensions.py](examples/sum_quadratics_distinct_extensions.py).
 
+#### Bruhat–Tits buildings of elliptic maximal tori arising from sums of two quadratic extensions
+
+**Python files:** `building.py` and `building_panel.py`
+
+The computation covers all three cases of sums of two quadratic extensions:
+
+- Case 4.1: Equal quadratic extensions.
+- Case 4.2: Distinct ramified quadratic extensions in the exceptional case.
+- Case 4.3: Distinct quadratic extensions in the remaining cases.
+
+##### Mathematical setting
+
+Let $A=\sqrt{\alpha}$ and $B=\sqrt{\beta}$. The Lie algebra of the elliptic maximal torus is
+
+$$
+\mathfrak{t}=F(A,0,0)\oplus F(0,B,0).
+$$
+
+We use the two generators
+
+$$
+X_1=(A,0,0),\qquad X_2=(0,B,0),
+$$
+
+acting by multiplication on their respective quadratic extensions.
+
+Their depths are
+
+$$
+r_1=\frac{\nu(\alpha)}{2},\qquad
+r_2=\frac{\nu(\beta)}{2}.
+$$
+
+##### Computational method
+
+1. Construct and verify the Witt basis $\mathcal{B}^*=(e_1,e_2,f_1,f_2,g_1)$.
+2. Express the two toral generators as matrices with respect to $\mathcal{B}^*$.
+3. Extract the root coefficients and compute their valuations.
+4. Apply the Moy–Prasad filtration inequalities to both generators.
+5. Determine the image of the Bruhat–Tits building of the elliptic maximal torus in the apartment of the split maximal torus.
+6. Apply affine Weyl group transformations to obtain its representative in the fundamental alcove.
+
+##### Coordinates in the fundamental alcove
+
+The following table summarizes the coordinates of the images of the Bruhat–Tits buildings of the elliptic maximal tori in the fundamental alcove.
+
+| Case | $\alpha$ | $\beta$ | $(\mu_1,\mu_2)$ | Condition | Coordinates |
+|---|---|---|---|---|---|
+| 4.1 | $\epsilon$ | $\epsilon$ | $(1,1)$ | Both | $(0,0)$ |
+| 4.1 | $\epsilon$ | $\epsilon$ | $(\varpi,\varpi)$ | Both | $(1/2,1/2)$ |
+| 4.1 | $\varpi$ or $\epsilon\varpi$ | $\alpha$ | Admissible pairs | Both | $(1/2,0)$ |
+| 4.2 | $\varpi$ | $\epsilon\varpi$ | $(1,1)$ | $-1$ not a square | $(1/2,0)$ |
+| 4.2 | $\varpi$ | $\epsilon\varpi$ | $(\epsilon,\epsilon)$ | $-1$ not a square | $(1/2,0)$ |
+| 4.3 | $\epsilon$ | $\varpi$ or $\epsilon\varpi$ | $(1,\epsilon)$ | Both | $(1/2,0)$ |
+| 4.3 | $\epsilon$ | $\varpi$ or $\epsilon\varpi$ | $(\varpi,1)$ | Both | $(1/2,1/2)$ |
+| 4.3 | $\varpi$ | $\epsilon\varpi$ | $(1,\epsilon)$ | $-1$ is a square | $(1/2,0)$ |
+| 4.3 | $\varpi$ | $\epsilon\varpi$ | $(\epsilon,1)$ | $-1$ is a square | $(1/2,0)$ |
+
+Here, **Both** means that the result holds whether or not $-1$ is a square in $F$, subject to the admissibility conditions.
+
+The coordinates are expressed in the fundamental alcove
+
+$$
+\mathcal{C}=\{(x_1,x_2):x_1\geq x_2\geq 0,\quad x_1+x_2\leq 1\}.
+$$
+
+When necessary, the affine Weyl group transformations include exchanging the two hyperbolic pairs of the Witt basis.
+
+##### Interactive visualization
+
+The first tab of the Streamlit application now displays:
+
+- The two toral generators and their depths.
+- Their matrices with respect to the constructed Witt basis.
+- The root coefficients and their valuations.
+- The combined Moy–Prasad filtration inequalities.
+- The coordinates in the apartment and in the fundamental alcove.
+- A diagram showing the image of the Bruhat–Tits building of the elliptic maximal torus.
+
+The computations are verified by 24 automated tests in `tests/test_sum_quadratics_building.py`, covering Cases 4.1, 4.2, and 4.3.
+
+
 ### 2. Biquadratic extensions
+
 
 **Python file:** `biquadratic.py`
 
@@ -785,13 +867,14 @@ This verifies the Witt basis identities exactly under the defining algebraic rel
 | `tests/` | Contains automated tests for the mathematical constructions. |
 | `tests/test_biquadratic.py` | Tests the biquadratic Witt basis constructions. |
 | `tests/test_building.py` | Contains 37 automated tests for the Bruhat–Tits building computations. |
+| `tests/test_sum_quadratics_building.py` | Contains 24 automated tests for the Bruhat–Tits buildings of elliptic maximal tori arising from sums of two quadratic extensions. |
 | `tests/test_quartic.py` | Tests the quartic Witt basis constructions. |
 | `.github/workflows/tests.yml` | Runs the Python test suite automatically using GitHub Actions. |
 | `requirements.txt` | Lists the Python dependencies. |
 | `README.md` | Documents the mathematical framework, implementation, and research objectives. |
 
 
-The interactive application is available through the link at the beginning of this README. The latest full test run had **246 passing tests** (November 13, 2026), including 37 tests for Bruhat–Tits building computations.
+The interactive application is available through the link at the beginning of this README. The latest full test run had **270 passing tests** (November 14, 2026), including 61 tests for Bruhat–Tits building computations: 37 for biquadratic extensions and 24 for sums of two quadratic extensions.
 
 
 ## Research development plan
@@ -807,6 +890,13 @@ The interactive application is available through the link at the beginning of th
 
 ### Stage 2 — Bruhat–Tits Building Computations
 
+#### Sums of two quadratic extensions
+
+- [x] Implement Bruhat–Tits building computations for elliptic maximal tori arising from equal quadratic extensions.
+- [x] Implement Bruhat–Tits building computations for elliptic maximal tori arising from distinct quadratic extensions.
+- [x] Implement interactive visualization in Streamlit for Cases 4.1, 4.2, and 4.3.
+- [x] Add 24 automated tests for the sums of two quadratic extensions.
+
 #### Biquadratic extensions
 
 - [x] Construct the toral generators and compute their depths.
@@ -818,13 +908,6 @@ The interactive application is available through the link at the beginning of th
 - [x] Verify the results against the theoretical classification.
 - [x] Implement interactive building diagrams in Streamlit.
 - [x] Add 37 automated tests for the building computations.
-
-#### Sums of two quadratic extensions
-
-- [ ] Implement building computations for equal quadratic extensions.
-- [ ] Implement building computations for distinct quadratic extensions.
-- [ ] Verify the computed points against the theoretical classification.
-- [ ] Integrate the computations and diagrams into Streamlit.
 
 #### Quartic extensions
 

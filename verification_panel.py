@@ -39,7 +39,8 @@ class Verification:
     norms: tuple[sp.Expr, ...]
     assumptions: tuple[str, ...]
     message: str
-
+    vectors: dict[str, tuple[sp.Expr, ...]] | None = None
+    reducer: Any = None
 
 def _class(name: str, epsilon: sp.Expr) -> sp.Expr:
     return {'1': sp.S.One, 'epsilon': epsilon, 'pi': PI,
@@ -251,7 +252,9 @@ def verify_sum_result(result: WittResult) -> Verification:
         verified=verified, gram=gram, norms=norms,
         assumptions=tuple(assumptions),
         message=('All 25 half-polarized Gram entries agree with 2H ⊕ ⟨1⟩.'
-                 if verified else 'The returned basis did not pass the symbolic Gram check.'),
+                 if verified else 'The returned basis did not pass the symbolic Gram check.'), 
+        vectors=vectors,
+        reducer=reduce,
     )
 
 

@@ -6,7 +6,12 @@ from web_runner import CLASSES, MU_OPTIONS, run_constructor, valid_parameters
 from biquadratic import construct_biquadratic
 
 from quartic_mu4 import mu4_options_for_case, is_admissible_mu4
-from building import compute_biquadratic_building
+
+from building import (
+    compute_biquadratic_building,
+    compute_sum_quadratic_building,
+)
+
 from building_panel import display_building
 
 st.set_page_config(
@@ -128,6 +133,13 @@ with tab_sum:
             file_name="SO5_Sum_Quadratics_Witt_Basis.txt", mime="text/plain",
         )
         render_sum_verification(result)
+
+        try:
+            building_result = compute_sum_quadratic_building(result)
+            display_building(building_result)
+        except ValueError as exc:
+                st.warning(f"Building computation: {exc}")
+
 with tab_biquad:
     st.subheader("Biquadratic extension")
     st.latex(r"K=F(A,B),\quad A^2=\alpha,\quad B^2=\beta,\quad E_1=F(A)")

@@ -1,3 +1,4 @@
+import sympy as sp
 
 from fractions import Fraction
 
@@ -700,5 +701,207 @@ def compute_biquadratic_building(result):
     building_result["swapped_pairs"] = (
         result.swapped_pairs
     )
+
+    return building_result
+
+# -------------------------------------------------
+# Sums of two quadratic extensions
+# -------------------------------------------------
+
+def sum_quadratic_coordinate_matrices(alpha, beta):
+    """
+    Matrices of the toral generators X1 and X2
+    in the coordinate order (a, b, c, d, z).
+
+    Here x = a + b*A, y = c + d*B,
+    with A**2 = alpha and B**2 = beta.
+    """
+
+    X1 = sp.Matrix([
+        [0, alpha, 0, 0, 0],
+        [1,     0, 0, 0, 0],
+        [0,     0, 0, 0, 0],
+        [0,     0, 0, 0, 0],
+        [0,     0, 0, 0, 0],
+    ])
+
+    X2 = sp.Matrix([
+        [0, 0, 0,    0, 0],
+        [0, 0, 0,    0, 0],
+        [0, 0, 0, beta, 0],
+        [0, 0, 1,    0, 0],
+        [0, 0, 0,    0, 0],
+    ])
+
+    return X1, X2
+
+def sum_quadratic_witt_matrix(result):
+    """
+    Construct the change-of-basis matrix from the
+    verified Witt basis of two quadratic extensions.
+
+    Columns are ordered as (e1, e2, f1, f2, g1).
+    """
+    from verification_panel import verify_sum_result
+
+    verification = verify_sum_result(result)
+
+    if not verification.verified:
+        raise ValueError(
+            "The Witt basis did not pass symbolic verification."
+        )
+
+    if verification.vectors is None:
+        raise ValueError(
+            "Symbolic Witt basis vectors are unavailable."
+        )
+
+    order = ("e1", "e2", "f1", "f2", "g1")
+
+    P = sp.Matrix.hstack(
+        *[
+            sp.Matrix(verification.vectors[name])
+            for name in order
+        ]
+    )
+
+    return P
+
+def sum_quadratic_generator_matrices(result):
+    """
+    Compute the toral generator matrices relative
+    to the verified Witt basis.
+    """
+    from verification_panel import (
+        _class, EPS, EXPECTED, verify_sum_result
+    )
+    epsilon = (
+        EPS if result.minus_one_square
+        else sp.Integer(-1)
+    )
+
+    alpha = _class(result.alpha, epsilon)
+    beta = _class(result.beta, epsilon)
+
+    mu1 = _class(result.mu1, epsilon)
+    mu2 = _class(result.mu2, epsilon)
+    lam = _class(result.lam, epsilon)
+
+    P = sum_quadratic_witt_matrix(result)
+
+    X1, X2 = sum_quadratic_coordinate_matrices(
+        alpha, beta
+    )
+
+    D = sp.diag(
+        mu1,
+        -alpha * mu1,
+        mu2,
+        -beta * mu2,
+        lam
+    )
+
+    J = EXPECTED
+
+    P_inverse = J * P.T * D
+
+    from verification_panel import verify_sum_result
+
+    verification = verify_sum_result(result)
+    reduce = verification.reducer
+
+    M1 = (P_inverse * X1 * P).applyfunc(reduce)
+    M2 = (P_inverse * X2 * P).applyfunc(reduce)
+
+    return M1, M2
+
+
+
+
+def compute_sum_quadratic_building(result):
+    """
+    Compute the building point for sums of quadratic
+    extensions using the verified Witt basis.
+    Supports Cases 4.1, 4.2, and 4.3.
+    """
+    from verification_panel import _class, EPS, PI, S, T
+
+    if not result.valid:
+        raise ValueError("Invalid Witt basis result.")
+
+    if result.case not in ("4.1", "4.2", "4.3"):
+        raise ValueError(
+            "Unsupported sum of quadratic extensions case."
+        )
+
+
+    epsilon = (
+        EPS if result.minus_one_square
+        else sp.Integer(-1)
+    )
+
+    alpha = _class(result.alpha, epsilon)
+    beta = _class(result.beta, epsilon)
+
+    def valuation(expr):
+        expr = sp.cancel(expr)
+
+        # Case 4.2: s^4 + t^4 = -1.
+        # Since -1 is not a square, s and t are units.
+        if (
+            result.case == "4.2"
+            and not result.minus_one_square
+            and result.mu1 == "epsilon"
+            and result.mu2 == "epsilon"
+        ):
+            powers = expr.as_powers_dict()
+            expr = sp.cancel(
+                expr / (
+                    S**powers.get(S, 0)
+                    * T**powers.get(T, 0)
+                )
+            )
+
+        return symbolic_valuation(expr, PI, EPS)
+
+    # Parameter valuations
+    v_alpha = valuation(alpha)
+    v_beta = valuation(beta)
+
+    # Toral generator depths
+    r1 = v_alpha / 2
+    r2 = v_beta / 2
+
+    # Matrices in the actual Witt basis
+    M1, M2 = sum_quadratic_generator_matrices(result)
+
+    # Compute the building point
+    building_result = compute_building_point(
+        [M1, M2],
+        [r1, r2],
+        valuation,
+    )
+
+    # Additional mathematical information
+    building_result["family"] = "sum_quadratic"
+    building_result["alpha"] = alpha
+    building_result["beta"] = beta
+
+    building_result["parameter_valuations"] = {
+        "alpha": v_alpha,
+        "beta": v_beta,
+    }
+
+    building_result["generator_names"] = [
+        "A",
+        "B",
+    ]
+
+    building_result["generator_matrices"] = [
+        M1,
+        M2,
+    ]
+
+    building_result["swapped_pairs"] = False
 
     return building_result
