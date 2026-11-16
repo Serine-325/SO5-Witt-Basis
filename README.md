@@ -1,14 +1,18 @@
 
-# Explicit Witt Bases and Bruhat–Tits Building Computations for Elliptic Maximal Tori in Split SO(5)
+# WittScape
 
-This Python research project constructs and verifies **explicit Witt bases** for quadratic spaces associated with elliptic maximal tori in the split group $\mathrm{SO}(5)$ and computes their corresponding points in the **Bruhat–Tits building**. It is based on doctoral research in the representation theory of $p$-adic groups at the University of Ottawa and ongoing joint research with Professor Monica Nevins.
+### Explicit Witt Bases and Bruhat–Tits Building Computations for Elliptic Maximal Tori in Split SO(5)
+
+*From quadratic forms to the geometry of elliptic tori.*
+
+**WittScape** is a Python research project that constructs and verifies **explicit Witt bases** for quadratic spaces associated with elliptic maximal tori in the split group $\mathrm{SO}(5)$ and computes their corresponding points in the **Bruhat–Tits building**. It is based on doctoral research in the representation theory of $p$-adic groups at the University of Ottawa and ongoing joint research with Professor Monica Nevins.
 
 For each supported split quadratic space, the program explicitly constructs a Witt basis $(e_1,e_2,f_1,f_2,g_1)$ and verifies its Gram matrix symbolically. The constructions use the algebraic structure of the corresponding field extensions, including norm equations and trace forms.
 
 The project also develops algorithms to determine the corresponding building points directly from the constructed Witt bases, using toral generators, root coefficients, valuations, and Moy–Prasad filtration inequalities. The computed points are expressed in the fundamental alcove and displayed graphically in the interactive application.
 
 
-**[Launch the interactive Witt Basis and Building Constructor](https://so5-witt-basis.onrender.com/)** — explore torus parameters, inspect the basis vectors, verify their Gram matrices, and visualize the Bruhat–Tits building points for all three families of elliptic maximal tori. No local installation or GitHub account is needed to use the app.
+**[Launch WittScape — Interactive Research Application](https://so5-witt-basis.onrender.com/)** — explore torus parameters, inspect the basis vectors, verify their Gram matrices, and visualize the Bruhat–Tits building points for all three families of elliptic maximal tori. No local installation or GitHub account is needed to use the app.
 
 **Implemented:** Explicit Witt basis constructions and Bruhat–Tits building computations for sums of two quadratic extensions, biquadratic extensions, and all three quartic cases: pure quartic, exceptional unramified, and exceptional twisted.
 

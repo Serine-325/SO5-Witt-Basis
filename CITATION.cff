@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software in your research, please cite it using this file."
 type: software
 
-title: "SO(5) Witt Basis: Explicit Constructions and Symbolic Verification"
+title: "WittScape: Explicit Witt Bases and Bruhat–Tits Building Computations for Elliptic Maximal Tori in Split SO(5)"
 
 authors:
   - family-names: "Bairakji"
@@ -13,10 +13,13 @@ repository-code: "https://github.com/Serine-325/SO5-Witt-Basis"
 url: "https://so5-witt-basis.onrender.com"
 
 abstract: >-
-  Python implementations of explicit Witt basis constructions
-  for elliptic maximal tori in split SO(5).
+  WittScape is a Python research software package for
+  explicit Witt basis constructions and Bruhat–Tits
+  building computations for elliptic maximal tori in
+  split SO(5).
   The software covers sums of two quadratic extensions,
   biquadratic extensions, and quartic extensions.
-  It includes admissibility checks, symbolic Gram-matrix
-  verification, automated tests, and an interactive
+  It includes constructive norm witnesses, admissibility
+  checks, symbolic Gram-matrix verification, building
+  point computations, automated tests, and an interactive
   Streamlit application.

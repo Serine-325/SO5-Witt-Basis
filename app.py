@@ -18,15 +18,20 @@ from building import (
 from building_panel import display_building
 
 st.set_page_config(
-    page_title="SO(5) — Witt Bases and Bruhat–Tits Building",
+    page_title="WittScape – SO(5)",
     page_icon="📐",
     layout="wide",
 )
 
+st.title("WittScape")
 
-st.title(
+st.subheader(
     "Explicit Witt Bases and Bruhat–Tits Building "
     "Computations for Elliptic Maximal Tori in Split SO(5)"
+)
+
+st.markdown(
+    "*From quadratic forms to the geometry of elliptic tori.*"
 )
 
 st.caption("Research software · Two quadratic extensions, biquadratic extensions, and quartic extensions")
