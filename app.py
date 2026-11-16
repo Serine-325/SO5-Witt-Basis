@@ -113,7 +113,12 @@ with tab_sum:
             "These choices do not satisfy "
             r"$(\mu_1,\alpha)(\mu_2,\beta)=(\alpha,\beta)$."
         )
-    if st.button("Construct Stage 1 Witt Basis", type="primary", disabled=not admissible):
+    if st.button(
+        "Construct Witt Basis and Find the Bruhat–Tits Building Point",
+        type="primary",
+        disabled=not admissible,
+        key="construct_sum_quadratic"
+    ):
         try:
             st.session_state["sum_result"] = run_constructor(*params)
             st.session_state["sum_params"] = params
@@ -124,9 +129,64 @@ with tab_sum:
         result = st.session_state["sum_result"]
         st.markdown(f"**Case {result.case}** · Square class of λ: `{result.lam}`")
         for name in ("e1", "e2", "f1", "f2", "g1"):
-            st.code(f"{name} = {result.basis[name]}", language="text")
-        if result.witnesses:
-            st.markdown("**Norm witnesses**")
+            basis_value = result.basis[name]
+
+            if result.case == "4.2":
+                basis_value = basis_value.replace("s^2", "s_0^2")
+                basis_value = basis_value.replace("t^2", "t_0^2")
+
+            st.code(f"{name} = {basis_value}", language="text")
+        if result.witnesses or result.case == "4.2":
+            st.markdown("**Constructive norm witnesses**")
+
+            if result.case == "4.1":
+                st.latex(
+                    r"u=W_\alpha\left(-\frac{\mu_1}{\mu_2}\right)"
+                )
+                st.latex(
+                    r"N_\alpha(u)=-\frac{\mu_1}{\mu_2}"
+                )
+
+            elif result.case == "4.2":
+                if "r" in result.witnesses and "s" in result.witnesses:
+                    st.latex(
+                        r"r=W_\alpha(1)=1,\qquad s=W_\beta(1)=1"
+                    )
+                    st.latex(
+                        r"N_\alpha(r)=1,\qquad N_\beta(s)=1"
+                    )
+                else:
+                    st.latex(
+                        r"r=W_\varpi(1)=1,\qquad s=W_{-\varpi}(1)=1"
+                    )
+                    st.latex(
+                        r"N_\varpi(r)=N_{-\varpi}(s)=1"
+                    )
+                    st.latex(r"s_0^4+t_0^4=-1")
+                    st.caption(
+                        "The simplified Witt basis uses the "
+                        "parameters s₀ and t₀."
+                    )
+                    st.code("r = 1", language="text")
+                    st.code("s = 1", language="text")
+            elif result.case == "4.3":
+                st.markdown(
+                    "The two quadratic summands are ordered so that "
+                    r"$(\mu_1,\alpha)_F=1$ and "
+                    r"$(\mu_2,\beta)_F=-1$."
+                )
+                st.latex(
+                    r"r=W_\alpha(\mu_1^{-1}),\qquad "
+                    r"s=W_\beta\left(\frac{\alpha}{\mu_2}\right)"
+                )
+                st.latex(
+                    r"N_\alpha(r)=\mu_1^{-1},\qquad "
+                    r"N_\beta(s)=\frac{\alpha}{\mu_2}"
+                )
+                st.caption(
+                    "The norm equations refer to the reordered "
+                    "parameters when the summands are interchanged."
+                )
             for key, value in result.witnesses.items():
                 st.code(f"{key} = {value}", language="text")
         with st.expander("Complete output and norm conditions"):
@@ -225,7 +285,11 @@ with tab_biquad:
         value=True, key="biq_order",
     )
 
-    if st.button("Construct and verify biquadratic Witt basis", type="primary"):
+    if st.button(
+        "Construct Witt Basis and Find the Bruhat–Tits Building Point",
+        type="primary",
+        key="construct_biquadratic"
+    ):
         try:
             if not is_split:
                 raise ValueError(
@@ -259,9 +323,29 @@ with tab_biquad:
         st.latex(r"\mu=" + result.mu_latex() +
                  r",\quad \lambda=" + sp.latex(result.rho**2))
         if result.t is not None:
-            st.markdown("**Norm witness**")
-            st.latex(r"t=" + result.t.latex())
-            st.latex(r"\mu N_{K/E_1}(t)=A")
+            st.markdown("**Constructive norm witness**")
+            st.latex(
+                r"u=W_\beta^{E_1}\left(\frac{A}{\mu}\right)"
+            )
+            st.latex(
+                r"N_{K/E_1}(u)=\frac{A}{\mu}"
+            )
+            st.latex(r"u=" + result.t.latex())
+            st.latex(r"\mu N_{K/E_1}(u)=A")
+
+        elif result.mode == "special":
+            st.markdown("**Constructive norm witness**")
+            st.latex(
+                r"u=W_\beta^{E_1}(i)=\frac{1+i}{h},"
+                r"\qquad h^2=2,\quad h\in E_1"
+            )
+            st.latex(
+                r"N_{K/E_1}(u)=\frac{(1+i)^2}{h^2}=i"
+            )
+            st.caption(
+                "The exceptional Witt basis is constructed "
+                "directly using 1+i, without rescaling by h."
+            )
         st.markdown("**Witt basis**")
         for name in ("e1", "e2", "f1", "f2", "g1"):
             v = result.basis[name]
@@ -428,12 +512,26 @@ with tab_quartic:
         )
         st.stop()
 
-    st.info(
-        "The quartic constructions will be displayed here, "
-        "together with their symbolic Gram-matrix verification."
+    quartic_params = (
+        minus_one_square,
+        subfield,
+        d_choice,
+        mu4_choice,
+        quartic_case
     )
 
-    if quartic_case == "Pure quartic extension":
+    if st.button(
+        "Construct Witt Basis and Find the Bruhat–Tits Building Point",
+        type="primary",
+        key="construct_quartic"
+    ):
+        st.session_state["quartic_params"] = quartic_params
+
+    quartic_ready = (
+        st.session_state.get("quartic_params") == quartic_params
+    )
+
+    if quartic_ready and quartic_case == "Pure quartic extension":
         from quartic import (
             pure_quartic_basis,
             pure_quartic_gram,
@@ -494,6 +592,22 @@ with tab_quartic:
             r"\delta^2="
             + sp.latex(r * sp.sqrt(alpha))
         )
+        st.markdown("**Constructive norm witness**")
+
+        st.latex(
+        r"u=W_d^{E_1}(-d)=\delta"
+        )
+
+        st.latex(
+        r"N_{K/E_1}(u)"
+        r"=\delta(-\delta)"
+        r"=-d"
+        )
+
+        st.latex(
+        r"N_{K/E_1}(u)="
+        + sp.latex(-r * sp.sqrt(alpha))
+        )
         if minus_one_square == "Yes":
             st.latex(r"i\in F,\qquad i^2=-1")
         st.markdown("**Constructed Witt basis in the original basis**")
@@ -546,7 +660,7 @@ with tab_quartic:
         else:
             st.error("Gram matrix verification failed.")
 
-    elif quartic_case == "Exceptional unramified: d = eta":
+    elif quartic_ready and quartic_case == "Exceptional unramified: d = eta":
 
         from quartic import (
             exceptional_quartic_basis,
@@ -572,13 +686,26 @@ with tab_quartic:
         )
 
         st.latex(
-            r"\eta=s^2+it^2,\qquad "
-            r"s^4+t^4=-1,\qquad "
+            r"\eta=s_0^2+it_0^2,\qquad "
+            r"s_0^4+t_0^4=-1,\qquad "
             r"\delta^2=\eta"
         )
 
         st.latex(
             r"\mu_4=1,\qquad \lambda=-1"
+        )
+        st.markdown("**Constructive norm witness**")
+
+        st.latex(
+            r"u=W_\eta^{E_1}(i)"
+            r"=\frac{i(s_0+\delta)}{t_0}"
+        )
+
+        st.latex(
+            r"N_{K/E_1}(u)"
+            r"=-\frac{s_0^2-\delta^2}{t_0^2}"
+            r"=-\frac{s_0^2-\eta}{t_0^2}"
+            r"=i"
         )
 
         # Construct the Witt basis
@@ -612,7 +739,10 @@ with tab_quartic:
             st.latex(
                 name
                 + r"=\left("
-                + sp.latex(x)
+                + sp.latex(
+                    x,
+                    symbol_names={s: "s_0", t: "t_0"}
+                )
                 + r",\,"
                 + sp.latex(z)
                 + r"\right)"
@@ -646,7 +776,7 @@ with tab_quartic:
         else:
             st.error("Gram matrix verification failed.")
 
-    elif quartic_case == "Exceptional twisted: d = eta*pi":
+    elif quartic_ready and quartic_case == "Exceptional twisted: d = eta*pi":
 
         from quartic import (
             exceptional_twisted_quartic_basis,
@@ -672,12 +802,29 @@ with tab_quartic:
         )
 
         st.latex(
-            r"\eta=s^2+it^2,\qquad s^4+t^4=-1"
+            r"\eta=s_0^2+it_0^2,\qquad s_0^4+t_0^4=-1"
         )
 
         st.latex(
             r"\delta^2=\eta\varpi,\qquad "
             r"\mu_4=\eta,\qquad \lambda=-1"
+        )
+        st.markdown("**Constructive norm witness**")
+
+        st.latex(
+                r"u=W_{\eta\varpi}^{E_1}"
+                r"\left(-\frac{2i\varpi}{\eta}\right)"
+                r"=\frac{(1+i)\delta}{\eta}"
+        )
+
+        st.latex(
+                r"N_{K/E_1}(u)"
+                r"=-\frac{(1+i)^2\delta^2}{\eta^2}"
+                r"=-\frac{2i\varpi}{\eta}"
+        )
+
+        st.latex(
+                r"\mu_4 N_{K/E_1}(u)=-2i\varpi"
         )
 
         # Construct the Witt basis
@@ -700,17 +847,13 @@ with tab_quartic:
                 # Display simplified Witt basis
         st.latex(r"e_1=\left(\frac{(1+i)\delta}{\eta},\,0\right)")
 
-        st.latex(r"e_2=\left(-\frac{1}{s},\,1\right)")
+        st.latex(r"e_2=\left(-\frac{1}{s_0},\,1\right)")
 
-        st.latex(
-            r"f_1=\left(-\frac{(1-i)\delta}{2\varpi\eta},\,0\right)"
-        )
+        st.latex(r"f_1=\left(-\frac{(1-i)\delta}{2\varpi\eta},\,0\right)")
 
-        st.latex(r"f_2=\left(-\frac{1}{2s},\,-\frac12\right)")
+        st.latex(r"f_2=\left(-\frac{1}{2s_0},\,-\frac12\right)")
 
-        st.latex(
-            r"g_1=\left(\frac{t^2}{s}+is,\,0\right)"
-        )
+        st.latex(r"g_1=\left(\frac{t_0^2}{s_0}+is_0,\,0\right)")
 
         # Compute the Gram matrix
         gram = exceptional_twisted_quartic_gram(
